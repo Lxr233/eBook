@@ -11,9 +11,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -52,6 +55,10 @@ public class MainActivity extends FragmentActivity {
 
     private LinearLayout.LayoutParams lineParam ;
 
+    private DrawerLayout drawerLayout;
+
+    private Button bt_me;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +75,8 @@ public class MainActivity extends FragmentActivity {
 
         mTabLine = (ImageView)findViewById(R.id.tab_line);
         viewPager = (ViewPager)findViewById(R.id.viewPaper);
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        bt_me = (Button)findViewById(R.id.bt_me);
 
         DisplayMetrics dpMetrics = new DisplayMetrics();
         getWindow().getWindowManager().getDefaultDisplay()
@@ -90,7 +99,14 @@ public class MainActivity extends FragmentActivity {
         viewPager.setAdapter(mFragmentAdapter);
         currentIndex = 1;
         viewPager.setCurrentItem(1);
-        TabBook.setTextColor(Color.BLACK);
+        TabBook.setTextColor(getResources().getColor(R.color.gray_shen));
+
+        bt_me.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(Gravity.LEFT);
+            }
+        });
 
 
         viewPager.addOnPageChangeListener(new MyOnPageChangeListener());
@@ -137,7 +153,7 @@ public class MainActivity extends FragmentActivity {
                             animator.setDuration(500);
                             animator.start();
                         }
-                        TabDownload.setTextColor(Color.BLACK);
+                        TabDownload.setTextColor(getResources().getColor(R.color.gray_shen));
                         break;
                     case 1:
                         if(currentIndex == 0){
@@ -145,7 +161,7 @@ public class MainActivity extends FragmentActivity {
                             animator.setDuration(500);
                             animator.start();
                         }
-                        TabBook.setTextColor(Color.BLACK);
+                        TabBook.setTextColor(getResources().getColor(R.color.gray_shen));
                         break;
                 }
                 currentIndex = position;
@@ -172,8 +188,8 @@ public class MainActivity extends FragmentActivity {
      * 重置颜色
      */
     private void resetTextView() {
-        TabBook.setTextColor(Color.GRAY);
-        TabDownload.setTextColor(Color.GRAY);
+        TabBook.setTextColor(getResources().getColor(R.color.gray_qian));
+        TabDownload.setTextColor(getResources().getColor(R.color.gray_qian));
     }
 
 }
