@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+
+    >
+    <GridLayout
+        android:id="@+id/bookset_gridlayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/book_border"
+        android:elevation="3dp"
+        >
+    </GridLayout>
+
+    <TextView
+        android:id="@+id/bookset_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="11sp"
+        android:text="DATE A LIVE 10"
+        />
+
+    <TextView
+        android:id="@+id/bookset_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:text="已读3%"
+        android:textColor="@color/gray_qian"
+        />
+
+
+
+
+</LinearLayout>
