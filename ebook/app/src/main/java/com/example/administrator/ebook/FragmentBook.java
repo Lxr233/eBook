@@ -257,7 +257,6 @@ public class FragmentBook extends Fragment {
                     viewHolderBook.img.setImageBitmap(
                             decodeSampledBitmapFromResource(getResources(), (Integer) data.get(position).get("img"), gridViewItemWidth, gridViewItemHeight));
 
-                    System.out.println("list is " + position);
                     convertView.setOnLongClickListener(new View.OnLongClickListener() {
 
                         // 定义接口的方法，长按View时会被调用到
@@ -286,10 +285,9 @@ public class FragmentBook extends Fragment {
 
                     List<Map<String, Object>> contentList= new ArrayList<Map<String, Object>>();
                     contentList = (ArrayList<Map<String, Object>>)data.get(position).get("content");
-                    System.out.println(contentList);
+
                     int contentWidth = (gridViewItemWidth - 3*dptopx(getContext(),5))/2;
                     int contentHeight =(int) (contentWidth *1.4);
-                    System.out.println(contentList.size());
                     //为gridlayout添加子view
                     for(int i=0,len = contentList.size();i<len;i++){
 
@@ -318,7 +316,8 @@ public class FragmentBook extends Fragment {
                         viewHolderBookSet.gridLayout.addView(contentImg,params);
 
                     }
-
+                    viewMap.put(convertView, position);
+                    convertView.setOnDragListener(new mBookDragListen());
 
 
                     break;
@@ -417,13 +416,14 @@ public class FragmentBook extends Fragment {
     private class mBookDragListen implements View.OnDragListener  {
         int eventPosition;
         int viewPosition;
-
+        int viewType ;
         // 这是系统向侦听器发送拖动事件时将会调用的方法
         public boolean onDrag(View v, DragEvent event) {
 
             // 定义一个变量，用于保存收到事件的action类型
             final int action = event.getAction();
             viewPosition = viewMap.get(v);
+
             String[] label;
             String type;
             // 处理所有需要的事件
@@ -433,26 +433,37 @@ public class FragmentBook extends Fragment {
                     label = event.getClipDescription().getLabel().toString().split("-");
                     type = label[0];
                     eventPosition = Integer.parseInt(label[1]);
+                    //若拖拽的控件是book控件，才会进行监听之后的动作
                     if (type.equals("book")){
-//                        System.out.println("label is "+event.getClipDescription().getLabel());
-
                         return true;
                     }
+                    //若拖拽的控件是bookset控件，则不会监听之后的动作
                     else
                         return false;
 
 
 
                 case DragEvent.ACTION_DRAG_ENTERED:
-
-                    if(!(viewMap.get(v) == eventPosition)){
-                        ImageView img = (ImageView)v.findViewById(R.id.book_img);
-                        img.setImageResource(R.drawable.book_border);
-                        img.setPivotX(0);
-                        img.setPivotY(0);
-                        img.animate().scaleX(1.05f);
-                        img.animate().scaleY(1.05f);
+                    System.out.println("view is"+(int)data.get(viewPosition).get("type"));
+                    if((int)data.get(viewPosition).get("type")==0){
+                        if(!(viewMap.get(v) == eventPosition)){
+                            ImageView img = (ImageView)v.findViewById(R.id.book_img);
+                            img.setImageResource(R.drawable.book_border);
+                            img.setPivotX(0);
+                            img.setPivotY(0);
+                            img.animate().scaleX(1.05f);
+                            img.animate().scaleY(1.05f);
+                        }
                     }
+                    else{
+                        GridLayout gridLayout = (GridLayout)v.findViewById(R.id.bookset_gridlayout);
+                        gridLayout.setPivotX(0);
+                        gridLayout.setPivotY(0);
+                        gridLayout.animate().scaleX(1.05f);
+                        gridLayout.animate().scaleY(1.05f);
+                    }
+
+
 
                     return(true);
 
@@ -464,55 +475,78 @@ public class FragmentBook extends Fragment {
 
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        if(!(viewMap.get(v) == eventPosition)){
-                            ImageView img = (ImageView)v.findViewById(R.id.book_img);
-                            img.animate().scaleX(1.0f);
-                            img.animate().scaleY(1.0f);
+                        if((int)data.get(viewPosition).get("type")==0){
+                            if(!(viewMap.get(v) == eventPosition)){
+                                ImageView img = (ImageView)v.findViewById(R.id.book_img);
+                                img.animate().scaleX(1.0f);
+                                img.animate().scaleY(1.0f);
 
-                            img.setImageResource((Integer)data.get(viewMap.get(v)).get("img"));
+                                img.setImageResource((Integer)data.get(viewMap.get(v)).get("img"));
+                            }
                         }
+                        else{
+                            GridLayout gridLayout = (GridLayout)v.findViewById(R.id.bookset_gridlayout);
+                            gridLayout.setPivotX(0);
+                            gridLayout.setPivotY(0);
+                            gridLayout.animate().scaleX(1.0f);
+                            gridLayout.animate().scaleY(1.0f);
+                        }
+
                         return(true);
 
 
 
                     case DragEvent.ACTION_DROP:
                         //如果放下的位置跟拖拽的view的位置一样，则将拖拽的view恢复原本的透明度
-                        if(viewPosition == eventPosition){
-                            v.setAlpha(1f);
+                        if((int)data.get(viewPosition).get("type")==0){
+                            if(viewPosition == eventPosition){
+                                v.setAlpha(1f);
+                            }
+                            else{
+                                List<Map<String, Object>> contentList= new ArrayList<Map<String, Object>>();
+                                Map<String, Object> map;
+
+                                map = new HashMap<String, Object>();
+                                map.put("img", data.get(viewPosition).get("img"));
+                                map.put("name", data.get(viewPosition).get("name"));
+                                map.put("msg", "已读 100%");
+                                contentList.add(map);
+
+                                map = new HashMap<String, Object>();
+                                map.put("img", data.get(eventPosition).get("img"));
+                                map.put("name", data.get(eventPosition).get("name"));
+                                map.put("msg", "已读 100%");
+                                contentList.add(map);
+
+                                map = new HashMap<String, Object>();
+                                map.put("img", R.drawable.book1);
+                                map.put("name", "未命名分组");
+                                map.put("msg", "共 2本");
+                                map.put("type", 1); //0表示单本书,1表示书集合
+                                map.put("content", contentList);
+                                data.set(viewPosition, map);
+                                data.remove(eventPosition);
+//                            viewMap = new HashMap<View, Integer>();
+
+                            }
                         }
                         else{
-                            List<Map<String, Object>> contentList= new ArrayList<Map<String, Object>>();
-                            Map<String, Object> map;
-
-                            map = new HashMap<String, Object>();
-                            map.put("img", data.get(viewPosition).get("img"));
-                            map.put("name", data.get(viewPosition).get("name"));
-                            map.put("msg", "已读 100%");
-                            contentList.add(map);
-
-                            map = new HashMap<String, Object>();
+                            List<Map<String, Object>> contentList = (ArrayList<Map<String, Object>>)data.get(viewPosition).get("content");
+                            Map<String, Object> map = new HashMap<String, Object>();;
                             map.put("img", data.get(eventPosition).get("img"));
                             map.put("name", data.get(eventPosition).get("name"));
                             map.put("msg", "已读 100%");
                             contentList.add(map);
-
-                            map = new HashMap<String, Object>();
-                            map.put("img", R.drawable.book1);
-                            map.put("name", "未命名分组");
-                            map.put("msg", "共 2本");
-                            map.put("type", 1); //0表示单本书,1表示书集合
-                            map.put("content",contentList);
-                            data.set(viewMap.get(v), map);
                             data.remove(eventPosition);
-                            adapter.notifyDataSetChanged();
 
                         }
+                        adapter.notifyDataSetChanged();
+
                         return(true);
 
 
 
                     case DragEvent.ACTION_DRAG_ENDED:
-                        System.out.println("book is "+event.getResult());
                         v.setAlpha(1.0f);
                         return true;
 
