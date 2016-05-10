@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.view.WindowManager;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -92,17 +94,52 @@ public class FragmentBook extends Fragment {
     private List<Map<String, Object>> getData()
     {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-
+        List<Map<String, Object>> contentList= new ArrayList<Map<String, Object>>();
         Map<String, Object> map;
-        for(int i=0;i<5;i++)
-        {
+        for(int i=0;i<2;i++) {
+            map = new HashMap<String, Object>();
+            map.put("img", R.drawable.book3);
+            map.put("name", "DATE A LIVE 9");
+            map.put("msg", "已读 0%");
+            map.put("type", 0); //0表示单本书,1表示书集合
+            list.add(map);
             map = new HashMap<String, Object>();
             map.put("img", R.drawable.book1);
             map.put("name", "DATE A LIVE 10");
-            map.put("msg", "已读 3%");
+            map.put("msg", "已读 100%");
+            map.put("type", 0); //0表示单本书,1表示书集合
+            list.add(map);
+            map = new HashMap<String, Object>();
+            map.put("img", R.drawable.book2);
+            map.put("name", "DATE A LIVE 11");
+            map.put("msg", "已读 0%");
             map.put("type", 0); //0表示单本书,1表示书集合
             list.add(map);
         }
+//
+//        for(int i=0;i<2;i++){
+//            map = new HashMap<String, Object>();
+//            map.put("img", R.drawable.book2);
+//            map.put("name", "DATE A LIVE 10");
+//            map.put("msg", "已读 100%");
+//            contentList.add(map);
+//        }
+//        for(int i=0;i<1;i++){
+//            map = new HashMap<String, Object>();
+//            map.put("img", R.drawable.book3);
+//            map.put("name", "DATE A LIVE 10");
+//            map.put("msg", "已读 100%");
+//            contentList.add(map);
+//        }
+
+//        map = new HashMap<String, Object>();
+//        map.put("img", R.drawable.book2);
+//        map.put("name", "DATE A LIVE ");
+//        map.put("msg", "共 2本");
+//        map.put("type", 1); //0表示单本书,1表示书集合
+//        map.put("content",contentList);
+//        list.add(map);
+
 //        for(int i=0;i<5;i++)
 //        {
 //            map = new HashMap<String, Object>();
@@ -220,12 +257,13 @@ public class FragmentBook extends Fragment {
                     viewHolderBook.img.setImageBitmap(
                             decodeSampledBitmapFromResource(getResources(), (Integer) data.get(position).get("img"), gridViewItemWidth, gridViewItemHeight));
 
+                    System.out.println("list is " + position);
                     convertView.setOnLongClickListener(new View.OnLongClickListener() {
 
                         // 定义接口的方法，长按View时会被调用到
                         public boolean onLongClick(View v) {
                             ClipData.Item item = new ClipData.Item(String.valueOf(position));
-                            ClipData data = new ClipData("book-"+String.valueOf(position), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                            ClipData data = new ClipData("book-" + String.valueOf(position), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
                             //ClipData data = ClipData.newPlainText("position", "1");
                             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
                             v.startDrag(data, shadowBuilder, v, 0);
@@ -245,6 +283,43 @@ public class FragmentBook extends Fragment {
                     Params.width = gridViewItemWidth-2;
                     Params.height = gridViewItemHeight;
                     viewHolderBookSet.gridLayout.setLayoutParams(Params);
+
+                    List<Map<String, Object>> contentList= new ArrayList<Map<String, Object>>();
+                    contentList = (ArrayList<Map<String, Object>>)data.get(position).get("content");
+                    System.out.println(contentList);
+                    int contentWidth = (gridViewItemWidth - 3*dptopx(getContext(),5))/2;
+                    int contentHeight =(int) (contentWidth *1.4);
+                    System.out.println(contentList.size());
+                    //为gridlayout添加子view
+                    for(int i=0,len = contentList.size();i<len;i++){
+
+                        if(i==4)
+                            break;
+                        ImageView contentImg = new ImageView(getContext());
+
+                        contentImg.setImageBitmap(
+                                decodeSampledBitmapFromResource(getResources(), (Integer)contentList.get(i).get("img"), contentWidth, contentHeight));
+                        //指定子组件所在行
+                        GridLayout.Spec rowSpec;
+                        if(i<2){
+                            rowSpec = GridLayout.spec(0);
+                        }
+                        else{
+                            rowSpec = GridLayout.spec(1);
+                        }
+                        //指定子组件所在列
+                        GridLayout.Spec columnSpec = GridLayout.spec(i%2);
+                        GridLayout.LayoutParams params = new GridLayout.LayoutParams(rowSpec,columnSpec);
+                        params.setGravity(Gravity.START);
+                        params.width = contentWidth;
+                        params.height = contentHeight;
+                        params.leftMargin = dptopx(getContext(),5);
+                        params.topMargin = dptopx(getContext(),7);
+                        viewHolderBookSet.gridLayout.addView(contentImg,params);
+
+                    }
+
+
 
                     break;
             }
@@ -341,13 +416,14 @@ public class FragmentBook extends Fragment {
     }
     private class mBookDragListen implements View.OnDragListener  {
         int eventPosition;
+        int viewPosition;
 
         // 这是系统向侦听器发送拖动事件时将会调用的方法
         public boolean onDrag(View v, DragEvent event) {
 
             // 定义一个变量，用于保存收到事件的action类型
             final int action = event.getAction();
-
+            viewPosition = viewMap.get(v);
             String[] label;
             String type;
             // 处理所有需要的事件
@@ -392,7 +468,8 @@ public class FragmentBook extends Fragment {
                             ImageView img = (ImageView)v.findViewById(R.id.book_img);
                             img.animate().scaleX(1.0f);
                             img.animate().scaleY(1.0f);
-                            img.setImageResource(R.drawable.book1);
+
+                            img.setImageResource((Integer)data.get(viewMap.get(v)).get("img"));
                         }
                         return(true);
 
@@ -400,18 +477,35 @@ public class FragmentBook extends Fragment {
 
                     case DragEvent.ACTION_DROP:
                         //如果放下的位置跟拖拽的view的位置一样，则将拖拽的view恢复原本的透明度
-                        if(viewMap.get(v) == eventPosition){
+                        if(viewPosition == eventPosition){
                             v.setAlpha(1f);
                         }
                         else{
+                            List<Map<String, Object>> contentList= new ArrayList<Map<String, Object>>();
                             Map<String, Object> map;
+
+                            map = new HashMap<String, Object>();
+                            map.put("img", data.get(viewPosition).get("img"));
+                            map.put("name", data.get(viewPosition).get("name"));
+                            map.put("msg", "已读 100%");
+                            contentList.add(map);
+
+                            map = new HashMap<String, Object>();
+                            map.put("img", data.get(eventPosition).get("img"));
+                            map.put("name", data.get(eventPosition).get("name"));
+                            map.put("msg", "已读 100%");
+                            contentList.add(map);
+
                             map = new HashMap<String, Object>();
                             map.put("img", R.drawable.book1);
                             map.put("name", "未命名分组");
                             map.put("msg", "共 2本");
                             map.put("type", 1); //0表示单本书,1表示书集合
-                            data.set(viewMap.get(v),map);
+                            map.put("content",contentList);
+                            data.set(viewMap.get(v), map);
+                            data.remove(eventPosition);
                             adapter.notifyDataSetChanged();
+
                         }
                         return(true);
 
@@ -419,6 +513,7 @@ public class FragmentBook extends Fragment {
 
                     case DragEvent.ACTION_DRAG_ENDED:
                         System.out.println("book is "+event.getResult());
+                        v.setAlpha(1.0f);
                         return true;
 
 

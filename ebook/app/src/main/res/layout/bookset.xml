@@ -10,9 +10,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/book_border"
+        android:columnCount="2"
         android:elevation="3dp"
         >
     </GridLayout>
+
 
     <TextView
         android:id="@+id/bookset_name"
