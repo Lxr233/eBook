@@ -8,6 +8,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.DragEvent;
@@ -57,7 +59,7 @@ public class FragmentBook extends Fragment {
 
 
         gridView = (GridView)view.findViewById(R.id.fragment_book_gridview);
-        scrollView = (ScrollView)view.findViewById(R.id.fragment1_book_scroll);
+        scrollView = (ScrollView)view.findViewById(R.id.fragment_book_scroll);
         return view;
     }
 
@@ -317,24 +319,23 @@ public class FragmentBook extends Fragment {
 
                     }
                     viewMap.put(convertView, position);
+                    convertView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            System.out.println("danji");
+                            FragmentBookSet fragment = FragmentBookSet.newInstance(position);
+                            FragmentManager manager = getFragmentManager();
+                            FragmentTransaction transaction = manager.beginTransaction();
+                            transaction.add(R.id.drawer_layout, fragment,"bookset");
+                            transaction.commit();
+                        }
+                    });
                     convertView.setOnDragListener(new mBookDragListen());
 
 
                     break;
             }
 
-//                img.setMaxHeight(gridViewItemHeight);
-//                ViewGroup.LayoutParams imgParams = img.getLayoutParams();
-//                imgParams.width = gridViewItemWidth;
-//                imgParams.height = gridViewItemHeight;
-//                img.setLayoutParams(imgParams);
-
-
-
-            //压缩图片
-//                img.setImageBitmap(decodeSampledBitmapFromResource(getResources(), (Integer) data.get(position).get("img"), pxWidth, pxHeight));
-//                title.setText((String)data.get(position).get("name"));
-//                info.setText((String)data.get(position).get("msg"));
 
 
 
