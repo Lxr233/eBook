@@ -4,7 +4,9 @@ package com.example.administrator.ebook;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -32,6 +34,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.administrator.ebook.database.BookData;
+
+import org.litepal.crud.DataSupport;
+import org.litepal.tablemanager.Connector;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,13 +58,19 @@ public class FragmentBook extends Fragment {
     private int gridViewItemWidth,gridViewItemHeight;
     private ScrollView scrollView;
     private MyAdapter adapter;
+    private BookData bookData;
+    private List<BookData> bookList;
+
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         View view=inflater.inflate(R.layout.fragment_book, container, false);
 
-
+        SQLiteDatabase db = Connector.getDatabase();
         gridView = (GridView)view.findViewById(R.id.fragment_book_gridview);
         scrollView = (ScrollView)view.findViewById(R.id.fragment_book_scroll);
         return view;
@@ -67,6 +80,20 @@ public class FragmentBook extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         init();
+        initDatabase();
+    }
+
+    private void initDatabase(){
+        bookData = new BookData();
+        bookData.setImg(1);
+        bookData.save();
+        BookData bookData2 = new BookData();
+        bookData2.setImg(2);
+        bookData2.save();
+        BookData bookData3 = new BookData();
+        bookData3.setImg(3);
+        bookData3.save();
+        DataSupport.delete(BookData.class, 2);
     }
 
     private void init(){
@@ -83,6 +110,16 @@ public class FragmentBook extends Fragment {
         System.out.println(gridViewItemWidth);
         gridView.setColumnWidth((int)(gridViewItemWidth*1.1));
         viewMap = new HashMap<View, Integer>();
+
+        sharedPreferences = getActivity().getSharedPreferences("temp", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        //第一次登陆时的初始化
+        if(!sharedPreferences.contains("times")){
+            editor.putInt("times",1);
+            
+            editor.commit();
+        }
 
         data = getData();
         adapter = new MyAdapter(getContext());
