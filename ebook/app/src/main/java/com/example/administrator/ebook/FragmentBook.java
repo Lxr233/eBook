@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.administrator.ebook.database.BookData;
+import com.example.administrator.ebook.database.BookSetContent;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
@@ -51,15 +52,15 @@ import java.util.Map;
 public class FragmentBook extends Fragment {
 
     private GridView gridView;
-    private List<Map<String, Object>> data;
+//    private List<Map<String, Object>> data;
     Map<View, Integer> viewMap;
     private WindowManager windowManager;
     private int screenHeight,screenWidth;
     private int gridViewItemWidth,gridViewItemHeight;
     private ScrollView scrollView;
     private MyAdapter adapter;
-    private BookData bookData;
-    private List<BookData> bookList;
+
+    private List<BookData> bookDataList;
 
 
     SharedPreferences sharedPreferences;
@@ -84,16 +85,45 @@ public class FragmentBook extends Fragment {
     }
 
     private void initDatabase(){
-        bookData = new BookData();
-        bookData.setImg(1);
-        bookData.save();
-        BookData bookData2 = new BookData();
-        bookData2.setImg(2);
-        bookData2.save();
-        BookData bookData3 = new BookData();
-        bookData3.setImg(3);
-        bookData3.save();
-        DataSupport.delete(BookData.class, 2);
+        sharedPreferences = getActivity().getSharedPreferences("temp", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        BookData bookData;
+
+
+        //第一次登陆时的初始化
+        if(!sharedPreferences.contains("times")){
+            editor.putInt("times",1);
+            editor.commit();
+            for(int i =1 ; i<=2;i++){
+                bookData = new BookData();
+                bookData.setImg(R.drawable.book1);
+                bookData.setName("DATA A LIVE 9");
+                bookData.setMsg("已读 0%");
+                bookData.setType(0);
+                bookData.save();
+                bookDataList.add(bookData);
+
+                bookData = new BookData();
+                bookData.setImg(R.drawable.book2);
+                bookData.setName("DATA A LIVE 10");
+                bookData.setMsg("已读 50%");
+                bookData.setType(0);
+                bookData.save();
+                bookDataList.add(bookData);
+
+                bookData = new BookData();
+                bookData.setImg(R.drawable.book3);
+                bookData.setName("DATA A LIVE 11");
+                bookData.setMsg("已读 100%");
+                bookData.setType(0);
+                bookData.save();
+                bookDataList.add(bookData);
+            }
+        }
+        else{
+            bookDataList =  DataSupport.findAll(BookData.class);
+            System.out.println("database is "+bookDataList);
+        }
     }
 
     private void init(){
@@ -108,20 +138,14 @@ public class FragmentBook extends Fragment {
         gridViewItemWidth = (int)((screenWidth-dptopx(getContext(),80)) / (3*1.1));
         gridViewItemHeight = (int)(gridViewItemWidth*1.4);
         System.out.println(gridViewItemWidth);
-        gridView.setColumnWidth((int)(gridViewItemWidth*1.1));
+        gridView.setColumnWidth((int) (gridViewItemWidth * 1.1));
         viewMap = new HashMap<View, Integer>();
 
-        sharedPreferences = getActivity().getSharedPreferences("temp", Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
 
-        //第一次登陆时的初始化
-        if(!sharedPreferences.contains("times")){
-            editor.putInt("times",1);
-            
-            editor.commit();
-        }
+        bookDataList = new ArrayList<BookData>();
 
-        data = getData();
+
+//        data = getData();
         adapter = new MyAdapter(getContext());
         gridView.setAdapter(adapter);
         scrollView.smoothScrollTo(0, 20);
@@ -155,39 +179,6 @@ public class FragmentBook extends Fragment {
             map.put("type", 0); //0表示单本书,1表示书集合
             list.add(map);
         }
-//
-//        for(int i=0;i<2;i++){
-//            map = new HashMap<String, Object>();
-//            map.put("img", R.drawable.book2);
-//            map.put("name", "DATE A LIVE 10");
-//            map.put("msg", "已读 100%");
-//            contentList.add(map);
-//        }
-//        for(int i=0;i<1;i++){
-//            map = new HashMap<String, Object>();
-//            map.put("img", R.drawable.book3);
-//            map.put("name", "DATE A LIVE 10");
-//            map.put("msg", "已读 100%");
-//            contentList.add(map);
-//        }
-
-//        map = new HashMap<String, Object>();
-//        map.put("img", R.drawable.book2);
-//        map.put("name", "DATE A LIVE ");
-//        map.put("msg", "共 2本");
-//        map.put("type", 1); //0表示单本书,1表示书集合
-//        map.put("content",contentList);
-//        list.add(map);
-
-//        for(int i=0;i<5;i++)
-//        {
-//            map = new HashMap<String, Object>();
-//            map.put("img", R.drawable.bookset);
-//            map.put("name", "DATE A LIVE");
-//            map.put("msg", "总共 5本");
-//            map.put("type", 1); //0表示单本书,1表示书集合
-//            list.add(map);
-//        }
         return list;
     }
 
@@ -214,7 +205,7 @@ public class FragmentBook extends Fragment {
         public int getCount() {
             //How many items are in the data set represented by this Adapter.
             //在此适配器中所代表的数据集中的条目数
-            return data.size();
+            return bookDataList.size();
         }
 
         /** 该方法返回多少个不同的布局*/
@@ -227,7 +218,7 @@ public class FragmentBook extends Fragment {
         @Override
         public int getItemViewType(int position) {
             // TODO Auto-generated method stub
-            return (int)data.get(position).get("type");
+            return bookDataList.get(position).getType();
         }
 
         @Override
@@ -287,14 +278,14 @@ public class FragmentBook extends Fragment {
 
             switch (type){
                 case TYPE_BOOK:
-                    viewHolderBook.name.setText((String) data.get(position).get("name"));
-                    viewHolderBook.msg.setText((String) data.get(position).get("msg"));
+                    viewHolderBook.name.setText(bookDataList.get(position).getName());
+                    viewHolderBook.msg.setText(bookDataList.get(position).getMsg());
                     ViewGroup.LayoutParams imgParams = viewHolderBook.img.getLayoutParams();
                     imgParams.width = gridViewItemWidth-2;
                     imgParams.height = gridViewItemHeight;
                     viewHolderBook.img.setLayoutParams(imgParams);
                     viewHolderBook.img.setImageBitmap(
-                            decodeSampledBitmapFromResource(getResources(), (Integer) data.get(position).get("img"), gridViewItemWidth, gridViewItemHeight));
+                            decodeSampledBitmapFromResource(getResources(), bookDataList.get(position).getImg(), gridViewItemWidth, gridViewItemHeight));
 
                     convertView.setOnLongClickListener(new View.OnLongClickListener() {
 
@@ -314,16 +305,16 @@ public class FragmentBook extends Fragment {
                     //convertView.setOnTouchListener(new mTouchListen());
                     break;
                 case TYPE_BOOKSET:
-                    viewHolderBookSet.name.setText((String) data.get(position).get("name"));
-                    viewHolderBookSet.msg.setText((String) data.get(position).get("msg"));
+                    viewHolderBookSet.name.setText(bookDataList.get(position).getName());
+                    viewHolderBookSet.msg.setText(bookDataList.get(position).getMsg());
 
                     ViewGroup.LayoutParams Params = viewHolderBookSet.gridLayout.getLayoutParams();
                     Params.width = gridViewItemWidth-2;
                     Params.height = gridViewItemHeight;
                     viewHolderBookSet.gridLayout.setLayoutParams(Params);
 
-                    List<Map<String, Object>> contentList= new ArrayList<Map<String, Object>>();
-                    contentList = (ArrayList<Map<String, Object>>)data.get(position).get("content");
+                    List<BookSetContent> contentList= new ArrayList<BookSetContent>();
+                    contentList = bookDataList.get(position).getContentList();
 
                     int contentWidth = (gridViewItemWidth - 3*dptopx(getContext(),5))/2;
                     int contentHeight =(int) (contentWidth *1.4);
@@ -335,7 +326,7 @@ public class FragmentBook extends Fragment {
                         ImageView contentImg = new ImageView(getContext());
 
                         contentImg.setImageBitmap(
-                                decodeSampledBitmapFromResource(getResources(), (Integer)contentList.get(i).get("img"), contentWidth, contentHeight));
+                                decodeSampledBitmapFromResource(getResources(), contentList.get(i).getImg(), contentWidth, contentHeight));
                         //指定子组件所在行
                         GridLayout.Spec rowSpec;
                         if(i<2){
@@ -482,8 +473,8 @@ public class FragmentBook extends Fragment {
 
 
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    System.out.println("view is"+(int)data.get(viewPosition).get("type"));
-                    if((int)data.get(viewPosition).get("type")==0){
+                    System.out.println("view is" + bookDataList.get(viewPosition).getType());
+                    if(bookDataList.get(viewPosition).getType()==0){
                         if(!(viewMap.get(v) == eventPosition)){
                             ImageView img = (ImageView)v.findViewById(R.id.book_img);
                             img.setImageResource(R.drawable.book_border);
@@ -513,13 +504,13 @@ public class FragmentBook extends Fragment {
 
 
                     case DragEvent.ACTION_DRAG_EXITED:
-                        if((int)data.get(viewPosition).get("type")==0){
+                        if(bookDataList.get(viewPosition).getType()==0){
                             if(!(viewMap.get(v) == eventPosition)){
                                 ImageView img = (ImageView)v.findViewById(R.id.book_img);
                                 img.animate().scaleX(1.0f);
                                 img.animate().scaleY(1.0f);
 
-                                img.setImageResource((Integer)data.get(viewMap.get(v)).get("img"));
+                                img.setImageResource(bookDataList.get(viewMap.get(v)).getImg());
                             }
                         }
                         else{
@@ -535,47 +526,65 @@ public class FragmentBook extends Fragment {
 
 
                     case DragEvent.ACTION_DROP:
-                        //如果放下的位置跟拖拽的view的位置一样，则将拖拽的view恢复原本的透明度
-                        if((int)data.get(viewPosition).get("type")==0){
+
+
+                        if(bookDataList.get(viewPosition).getType()==0){
+                            //如果放下的位置跟拖拽的view的位置一样，则将拖拽的view恢复原本的透明度
                             if(viewPosition == eventPosition){
                                 v.setAlpha(1f);
                             }
                             else{
-                                List<Map<String, Object>> contentList= new ArrayList<Map<String, Object>>();
-                                Map<String, Object> map;
 
-                                map = new HashMap<String, Object>();
-                                map.put("img", data.get(viewPosition).get("img"));
-                                map.put("name", data.get(viewPosition).get("name"));
-                                map.put("msg", "已读 100%");
-                                contentList.add(map);
+                                List<BookSetContent> contentList= new ArrayList<BookSetContent>();
+                                BookSetContent content = new BookSetContent();
+                                content.setImg(bookDataList.get(viewPosition).getImg());
+                                content.setName(bookDataList.get(viewPosition).getName());
+                                content.setMsg(bookDataList.get(viewPosition).getMsg());;
+                                contentList.add(content);
 
-                                map = new HashMap<String, Object>();
-                                map.put("img", data.get(eventPosition).get("img"));
-                                map.put("name", data.get(eventPosition).get("name"));
-                                map.put("msg", "已读 100%");
-                                contentList.add(map);
+                                content = new BookSetContent();
+                                content.setImg(bookDataList.get(eventPosition).getImg());
+                                content.setName(bookDataList.get(eventPosition).getName());
+                                content.setMsg(bookDataList.get(eventPosition).getMsg());;
+                                contentList.add(content);
 
-                                map = new HashMap<String, Object>();
-                                map.put("img", R.drawable.book1);
-                                map.put("name", "未命名分组");
-                                map.put("msg", "共 2本");
-                                map.put("type", 1); //0表示单本书,1表示书集合
-                                map.put("content", contentList);
-                                data.set(viewPosition, map);
-                                data.remove(eventPosition);
+                                BookData bookData = new BookData();
+                                bookData.setName("未命名分组");
+                                bookData.setMsg("共 2本");
+                                bookData.setType(1);
+                                bookData.setContentList(contentList);
+                                bookData.setContentCount(2);
+                                bookDataList.set(viewPosition,bookData);
+                                bookDataList.remove(eventPosition);
 //                            viewMap = new HashMap<View, Integer>();
 
                             }
                         }
                         else{
-                            List<Map<String, Object>> contentList = (ArrayList<Map<String, Object>>)data.get(viewPosition).get("content");
-                            Map<String, Object> map = new HashMap<String, Object>();;
-                            map.put("img", data.get(eventPosition).get("img"));
-                            map.put("name", data.get(eventPosition).get("name"));
-                            map.put("msg", "已读 100%");
-                            contentList.add(map);
-                            data.remove(eventPosition);
+                            //放下后恢复书籍集合的原本大小
+                            GridLayout gridLayout = (GridLayout)v.findViewById(R.id.bookset_gridlayout);
+                            gridLayout.setPivotX(0);
+                            gridLayout.setPivotY(0);
+                            gridLayout.animate().scaleX(1.0f);
+                            gridLayout.animate().scaleY(1.0f);
+
+                            BookData bookData = bookDataList.get(viewPosition);
+                            List<BookSetContent> contentList = bookData.getContentList();
+
+                            BookSetContent content = new BookSetContent();
+                            content = new BookSetContent();
+                            content.setImg(bookDataList.get(eventPosition).getImg());
+                            content.setName(bookDataList.get(eventPosition).getName());
+                            content.setMsg(bookDataList.get(eventPosition).getMsg());;
+                            contentList.add(content);
+
+                            bookData.setContentList(contentList);
+                            bookData.setContentCount(bookData.getContentCount() + 1);
+                            bookData.setMsg("共 " + bookData.getContentCount() + "本");
+
+                            bookDataList.set(viewPosition, bookData);
+                            bookDataList.remove(eventPosition);
+
 
                         }
                         adapter.notifyDataSetChanged();
