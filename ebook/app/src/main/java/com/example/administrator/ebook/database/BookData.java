@@ -1,6 +1,8 @@
 package com.example.administrator.ebook.database;
 
+import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
+import org.w3c.dom.Comment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,20 @@ public class BookData extends DataSupport {
     private String name;
     private String msg;
     private int type;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    private int id;
+
+
     private int contentCount;
+
     private List<BookSetContent> contentList = new ArrayList<BookSetContent>();
 
     public String getName() {
@@ -57,7 +72,7 @@ public class BookData extends DataSupport {
     }
 
     public List<BookSetContent> getContentList() {
-        return contentList;
+        return DataSupport.where("bookdata_id = ?", String.valueOf(id)).find(BookSetContent.class);
     }
 
     public void setContentList(List<BookSetContent> contentList) {

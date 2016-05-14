@@ -10,6 +10,16 @@ public class BookSetContent extends DataSupport {
     private String name;
     private String msg;
 
+    public int getBookdata_id() {
+        return bookdata_id;
+    }
+
+    public void setBookdata_id(int bookdata_id) {
+        this.bookdata_id = bookdata_id;
+    }
+
+    private int bookdata_id;
+
     public BookData getBookData() {
         return bookData;
     }

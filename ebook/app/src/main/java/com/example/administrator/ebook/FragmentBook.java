@@ -84,6 +84,12 @@ public class FragmentBook extends Fragment {
         initDatabase();
     }
 
+    @Override
+    public void onPause(){
+        super.onPause();
+
+    }
+
     private void initDatabase(){
         sharedPreferences = getActivity().getSharedPreferences("temp", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -313,8 +319,9 @@ public class FragmentBook extends Fragment {
                     Params.height = gridViewItemHeight;
                     viewHolderBookSet.gridLayout.setLayoutParams(Params);
 
-                    List<BookSetContent> contentList= new ArrayList<BookSetContent>();
-                    contentList = bookDataList.get(position).getContentList();
+                    List<BookSetContent> contentList=bookDataList.get(position).getContentList();
+
+                    System.out.println("contentlist is "+contentList);
 
                     int contentWidth = (gridViewItemWidth - 3*dptopx(getContext(),5))/2;
                     int contentHeight =(int) (contentWidth *1.4);
@@ -363,34 +370,11 @@ public class FragmentBook extends Fragment {
 
                     break;
             }
-
-
-
-
-
             return convertView;
         }
 
     }
 
-//    private class mTouchListen implements View.OnTouchListener{
-//        public boolean onTouch(View v,MotionEvent ev){
-//            switch(ev.getAction()){
-//                case MotionEvent.ACTION_DOWN:
-//                    System.out.println("touch x down is "+(int) ev.getX());
-//                    break;
-//                case MotionEvent.ACTION_MOVE:
-//                    System.out.println("touch x move is "+(int) ev.getX());
-//                    break;
-//                case MotionEvent.ACTION_UP:
-//                    System.out.println("touch x up is "+(int) ev.getX());
-//                    break;
-//            }
-//            return false;
-//        }
-//
-//
-//    }
 
 
     private class mGridViewDragListen implements View.OnDragListener{
@@ -534,27 +518,36 @@ public class FragmentBook extends Fragment {
                                 v.setAlpha(1f);
                             }
                             else{
+//                                BookData bookData = DataSupport.find(BookData.class, bookDataList.get(viewPosition).getId());
+                                BookData bookData = bookDataList.get(viewPosition);
+                                System.out.println("aaa " + bookDataList.get(viewPosition).getId());
 
-                                List<BookSetContent> contentList= new ArrayList<BookSetContent>();
                                 BookSetContent content = new BookSetContent();
                                 content.setImg(bookDataList.get(viewPosition).getImg());
                                 content.setName(bookDataList.get(viewPosition).getName());
-                                content.setMsg(bookDataList.get(viewPosition).getMsg());;
-                                contentList.add(content);
+                                content.setMsg(bookDataList.get(viewPosition).getMsg());
+                                content.setBookdata_id(bookDataList.get(viewPosition).getId());
+                                content.save();
+
 
                                 content = new BookSetContent();
                                 content.setImg(bookDataList.get(eventPosition).getImg());
                                 content.setName(bookDataList.get(eventPosition).getName());
-                                content.setMsg(bookDataList.get(eventPosition).getMsg());;
-                                contentList.add(content);
+                                content.setMsg(bookDataList.get(eventPosition).getMsg());
+                                content.setBookdata_id(bookDataList.get(viewPosition).getId());
+                                content.save();
 
-                                BookData bookData = new BookData();
+
+
                                 bookData.setName("未命名分组");
                                 bookData.setMsg("共 2本");
                                 bookData.setType(1);
-                                bookData.setContentList(contentList);
                                 bookData.setContentCount(2);
-                                bookDataList.set(viewPosition,bookData);
+                                bookData.save();
+
+//                                bookDataList.set(viewPosition, bookData);
+
+                                DataSupport.delete(BookData.class, bookDataList.get(eventPosition).getId());
                                 bookDataList.remove(eventPosition);
 //                            viewMap = new HashMap<View, Integer>();
 
@@ -568,26 +561,30 @@ public class FragmentBook extends Fragment {
                             gridLayout.animate().scaleX(1.0f);
                             gridLayout.animate().scaleY(1.0f);
 
+
+                            //update 对应数据
+//                            BookData bookData = DataSupport.find(BookData.class, bookDataList.get(viewPosition).getId());
                             BookData bookData = bookDataList.get(viewPosition);
-                            List<BookSetContent> contentList = bookData.getContentList();
 
                             BookSetContent content = new BookSetContent();
-                            content = new BookSetContent();
                             content.setImg(bookDataList.get(eventPosition).getImg());
                             content.setName(bookDataList.get(eventPosition).getName());
-                            content.setMsg(bookDataList.get(eventPosition).getMsg());;
-                            contentList.add(content);
+                            content.setMsg(bookDataList.get(eventPosition).getMsg());
+                            content.setBookdata_id(bookDataList.get(viewPosition).getId());
+                            content.save();
 
-                            bookData.setContentList(contentList);
-                            bookData.setContentCount(bookData.getContentCount() + 1);
+
+                            bookData.setContentCount(bookData.getContentList().size());
                             bookData.setMsg("共 " + bookData.getContentCount() + "本");
-
-                            bookDataList.set(viewPosition, bookData);
+                            bookData.save();
+//                            bookDataList.set(viewPosition, bookData);
+                            DataSupport.delete(BookData.class, bookDataList.get(eventPosition).getId());
                             bookDataList.remove(eventPosition);
 
 
                         }
                         adapter.notifyDataSetChanged();
+
 
                         return(true);
 
