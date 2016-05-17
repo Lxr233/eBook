@@ -56,6 +56,7 @@ import java.util.Map;
  */
 public class FragmentBook extends Fragment {
 
+    private boolean isFirst = true;
     private GridView gridView;
     //    private List<Map<String, Object>> data;
     Map<View, Integer> viewMap;
@@ -63,9 +64,9 @@ public class FragmentBook extends Fragment {
     private int screenHeight,screenWidth;
     private int gridViewItemWidth,gridViewItemHeight;
     private ScrollView scrollView;
-    private MyAdapter adapter;
+    public static MyAdapter adapter;
 
-    private List<BookData> bookDataList ;
+    public static List<BookData> bookDataList ;
     private LruCache<String, Bitmap> mMemoryCache;
 
 
@@ -90,6 +91,25 @@ public class FragmentBook extends Fragment {
         initDatabase();
         initCache();
     }
+
+
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        if (isVisibleToUser) {
+//            System.out.println("显示到最前");
+//            if(!isFirst){
+//                System.out.println("不是第一次显示到最前");
+//                bookDataList = new ArrayList<BookData>();
+//                bookDataList =  DataSupport.findAll(BookData.class);
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//        } else {
+//            System.out.println("不可见");
+//            isFirst =false;
+//        }
+//    }
 
     private void initCache(){
         // 获取到可用内存的最大值，使用内存超出这个值会引起OutOfMemory异常。
@@ -190,6 +210,8 @@ public class FragmentBook extends Fragment {
             imageView.setImageBitmap(bitmap);
         }
     }
+
+
 
 
     private void initDatabase(){
@@ -338,7 +360,6 @@ public class FragmentBook extends Fragment {
             ViewHolderBook viewHolderBook=null;
             ViewHolderBookSet viewHolderBookSet=null;
             if(convertView==null){
-                System.out.println("第一次 "+position);
                 switch (type) {
                     case TYPE_BOOK:
                         viewHolderBook=new ViewHolderBook();
@@ -360,7 +381,6 @@ public class FragmentBook extends Fragment {
                 }
             }
             else{
-                System.out.println("复用 "+position);
                 switch (type) {
                     case TYPE_BOOK:
                         viewHolderBook=(ViewHolderBook) convertView.getTag();

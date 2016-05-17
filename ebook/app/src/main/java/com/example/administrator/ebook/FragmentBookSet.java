@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -43,7 +44,6 @@ import java.util.Map;
 public class FragmentBookSet extends Fragment {
     private EditText et;
     private LinearLayout linearLayout;
-    private List<BookData> bookDataList = new ArrayList<BookData>();
     private List<BookSetContent> contentList = new ArrayList<BookSetContent>();
     private GridView gridView;
     private int p; //存储传过来的bookdatalist的位置
@@ -51,6 +51,7 @@ public class FragmentBookSet extends Fragment {
     private int screenHeight,screenWidth;
     private int gridViewItemWidth,gridViewItemHeight;
     private MyBookSetAdapter adapter;
+    private String bookSetName;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,9 +70,6 @@ public class FragmentBookSet extends Fragment {
         getDatabase();
         initBackground();
         initListener();
-
-
-
         return view;
 
     }
@@ -95,13 +93,39 @@ public class FragmentBookSet extends Fragment {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager manager = getFragmentManager();
-                Fragment fragment = manager.findFragmentByTag("bookset");
-                FragmentTransaction transaction = manager.beginTransaction();
-                transaction.remove(fragment);
-                transaction.commit();
+                System.out.println("单击");
+                if (et.hasFocus()) {
+                    System.out.println("已经获得焦点"+et.getText().toString());
+                    et.clearFocus();//取消焦点
+                    ((InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(getActivity()
+                                            .getCurrentFocus().getWindowToken(),
+                                    InputMethodManager.HIDE_NOT_ALWAYS);//关闭输入法
+                    if(!et.getText().toString().equals(FragmentBook.bookDataList.get(p).getName())){
+                        BookData bookData = FragmentBook.bookDataList.get(p);
+                        bookData.setName(et.getText().toString());
+                        bookData.save();
+                        FragmentBook.adapter.notifyDataSetChanged();
+                    }
+                }
+                else{
+                    FragmentManager manager = getFragmentManager();
+                    Fragment fragment = manager.findFragmentByTag("bookset");
+                    FragmentTransaction transaction = manager.beginTransaction();
+                    transaction.remove(fragment);
+                    transaction.commit();
+                }
+
             }
         });
+//        et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View view, boolean hasFocus) {
+//                if(!hasFocus){
+//
+//                }
+//            }
+//        });
     }
 
     private void initBackground(){
@@ -113,8 +137,9 @@ public class FragmentBookSet extends Fragment {
 
     private void getDatabase(){
         SQLiteDatabase db = Connector.getDatabase();
-        bookDataList =  DataSupport.findAll(BookData.class);
-        contentList = bookDataList.get(p).getContentList();
+        FragmentBook.bookDataList =  DataSupport.findAll(BookData.class);
+        contentList = FragmentBook.bookDataList.get(p).getContentList();
+        et.setText(FragmentBook.bookDataList.get(p).getName());
 
     }
 
@@ -128,6 +153,7 @@ public class FragmentBookSet extends Fragment {
         TextView name,msg;
         ImageView img;
     }
+
 
 
 
@@ -160,7 +186,7 @@ public class FragmentBookSet extends Fragment {
     private static Bitmap compress(Bitmap bkg ,int width ,int height) {
         float scaleFactor = 20;// 图片缩放比例；
         Matrix matrix = new Matrix();
-        matrix.postScale(1/scaleFactor, 1/scaleFactor);
+        matrix.postScale(1 / scaleFactor, 1 / scaleFactor);
         Bitmap bitmapBlur = Bitmap.createBitmap(bkg, 0, 0, width, height, matrix, true);
         return bitmapBlur;
     }
