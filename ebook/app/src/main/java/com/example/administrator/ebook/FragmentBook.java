@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Handler;
 
 /**
  * Created by Lxr on 2016/4/12.
@@ -64,6 +65,9 @@ public class FragmentBook extends Fragment {
     private int screenHeight,screenWidth;
     private int gridViewItemWidth,gridViewItemHeight;
     private ScrollView scrollView;
+
+    //代表屏幕最下端的位置在gridview中的坐标
+    private double gridPosition;
     public static MyAdapter adapter;
 
     public static List<BookData> bookDataList ;
@@ -92,24 +96,6 @@ public class FragmentBook extends Fragment {
         initCache();
     }
 
-
-//    @Override
-//    public void setUserVisibleHint(boolean isVisibleToUser) {
-//        super.setUserVisibleHint(isVisibleToUser);
-//        if (isVisibleToUser) {
-//            System.out.println("显示到最前");
-//            if(!isFirst){
-//                System.out.println("不是第一次显示到最前");
-//                bookDataList = new ArrayList<BookData>();
-//                bookDataList =  DataSupport.findAll(BookData.class);
-//                adapter.notifyDataSetChanged();
-//            }
-//
-//        } else {
-//            System.out.println("不可见");
-//            isFirst =false;
-//        }
-//    }
 
     private void initCache(){
         // 获取到可用内存的最大值，使用内存超出这个值会引起OutOfMemory异常。
@@ -186,8 +172,6 @@ public class FragmentBook extends Fragment {
 
     }
 
-
-
     private class BookImgTask extends AsyncTask<Integer, Integer, Bitmap>  {
         private int mPosition;
         private ImageView imageView;
@@ -210,8 +194,6 @@ public class FragmentBook extends Fragment {
             imageView.setImageBitmap(bitmap);
         }
     }
-
-
 
 
     private void initDatabase(){
@@ -265,6 +247,8 @@ public class FragmentBook extends Fragment {
         screenWidth = dm.widthPixels;
         screenHeight = dm.heightPixels ;
 
+        gridPosition = screenHeight-dptopx(getContext(),150+30);
+
 
         gridViewItemWidth = (int)((screenWidth-dptopx(getContext(),80)) / (3*1.1));
         gridViewItemHeight = (int)(gridViewItemWidth*1.4);
@@ -289,7 +273,6 @@ public class FragmentBook extends Fragment {
         gridView.setOnDragListener(new mGridViewDragListen());
 
     }
-
 
 
     static class ViewHolderBook{
@@ -493,6 +476,31 @@ public class FragmentBook extends Fragment {
 
 
                 case DragEvent.ACTION_DRAG_LOCATION:
+                    System.out.println(" positon is "+ event.getY());
+                    System.out.println(" positon123 is "+ (gridPosition-80));
+//                    while(event.getY()>gridPosition-80||event.getY()<80){
+//                        if(event.getY()>gridPosition-80){
+//                            scrollView.post(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    scrollView.smoothScrollBy(0,20);
+//                                    gridPosition+=20;
+//                                }
+//                            });
+//                        }
+//                        else if(event.getY()<gridPosition-screenHeight+80){
+//                            scrollView.post(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    scrollView.smoothScrollBy(0,-20);
+//                                    gridPosition-=20;
+//                                }
+//                            });
+//                        }
+//                    }
+
+
+
                     return(true);
 
 
@@ -546,7 +554,6 @@ public class FragmentBook extends Fragment {
                     else
                         return false;
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    System.out.println("view is" + bookDataList.get(viewPosition).getType());
                     if(bookDataList.get(viewPosition).getType()==0){
                         if(!(viewMap.get(v) == eventPosition)){
                             ImageView img = (ImageView)v.findViewById(R.id.book_img);
@@ -566,6 +573,7 @@ public class FragmentBook extends Fragment {
                     }
                     return(true);
                 case DragEvent.ACTION_DRAG_LOCATION:
+
                     return(true);
 
                 case DragEvent.ACTION_DRAG_EXITED:
