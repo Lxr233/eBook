@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.util.LruCache;
@@ -50,8 +51,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Handler;
-
+import android.os.Handler;
 /**
  * Created by Lxr on 2016/4/12.
  */
@@ -65,13 +65,14 @@ public class FragmentBook extends Fragment {
     private int screenHeight,screenWidth;
     private int gridViewItemWidth,gridViewItemHeight;
     private ScrollView scrollView;
+    private double tabHeight;
 
-    //代表屏幕最下端的位置在gridview中的坐标
-    private double gridPosition;
     public static MyAdapter adapter;
 
     public static List<BookData> bookDataList ;
     private LruCache<String, Bitmap> mMemoryCache;
+    private double moveY,mUpScrollBorder,mDownScrollBorder;
+
 
 
     SharedPreferences sharedPreferences;
@@ -247,8 +248,9 @@ public class FragmentBook extends Fragment {
         screenWidth = dm.widthPixels;
         screenHeight = dm.heightPixels ;
 
-        gridPosition = screenHeight-dptopx(getContext(),150+30);
-
+        tabHeight = dptopx(getContext(),30);
+        mDownScrollBorder = (screenHeight-tabHeight)*5/6;
+        mUpScrollBorder = (screenHeight-tabHeight)*1/6;
 
         gridViewItemWidth = (int)((screenWidth-dptopx(getContext(),80)) / (3*1.1));
         gridViewItemHeight = (int)(gridViewItemWidth*1.4);
@@ -270,9 +272,30 @@ public class FragmentBook extends Fragment {
         adapter = new MyAdapter(getContext());
         gridView.setAdapter(adapter);
         scrollView.smoothScrollTo(0, 20);
-        gridView.setOnDragListener(new mGridViewDragListen());
+        scrollView.setOnDragListener(new mScrollViewDragListen());
+        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+                System.out.println("item 被长按" + position);
+                return false;
+            }
+        });
+//        gridView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent event) {
+//                switch(event.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        System.out.println("手指落下");
+//                    case MotionEvent.ACTION_MOVE:
+//                        System.out.println("手指移动"+event.getRawY());
+//                }
+//                        return false;
+//            }
+//        });
 
     }
+
+
 
 
     static class ViewHolderBook{
@@ -455,78 +478,64 @@ public class FragmentBook extends Fragment {
 
     }
 
-    private class mGridViewDragListen implements View.OnDragListener{
+
+    private Handler mHandler = new Handler();
+    private Runnable mScrollRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            int scrollY;
+            if(moveY > mDownScrollBorder){
+                scrollY = 10;
+                mHandler.postDelayed(mScrollRunnable, 25);
+            }else if(moveY < mUpScrollBorder){
+                scrollY = -10;
+                mHandler.postDelayed(mScrollRunnable, 25);
+            }else{
+                scrollY = 0;
+                mHandler.removeCallbacks(mScrollRunnable);
+            }
+            scrollView.smoothScrollBy(0,scrollY);
+        }
+    };
+
+    private class mScrollViewDragListen implements View.OnDragListener{
         // 这是系统向侦听器发送拖动事件时将会调用的方法
         public boolean onDrag(View v, DragEvent event) {
 
             // 定义一个变量，用于保存收到事件的action类型
             final int action = event.getAction();
-
-
             // 处理所有需要的事件
             switch(action) {
-
                 case DragEvent.ACTION_DRAG_STARTED:
                     return true;
-
-
                 case DragEvent.ACTION_DRAG_ENTERED:
                     return(true);
-
-
-
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    System.out.println(" positon is "+ event.getY());
-                    System.out.println(" positon123 is "+ (gridPosition-80));
-//                    while(event.getY()>gridPosition-80||event.getY()<80){
-//                        if(event.getY()>gridPosition-80){
-//                            scrollView.post(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    scrollView.smoothScrollBy(0,20);
-//                                    gridPosition+=20;
-//                                }
-//                            });
-//                        }
-//                        else if(event.getY()<gridPosition-screenHeight+80){
-//                            scrollView.post(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    scrollView.smoothScrollBy(0,-20);
-//                                    gridPosition-=20;
-//                                }
-//                            });
-//                        }
-//                    }
+                    System.out.println("position is"+event.getY());
+                    moveY = event.getY();
+                    mHandler.post(mScrollRunnable);
+                    if(moveY < mDownScrollBorder && moveY > mUpScrollBorder){
+                        mHandler.removeCallbacks(mScrollRunnable);
+                    }
 
 
 
                     return(true);
-
-
                 case DragEvent.ACTION_DRAG_EXITED:
                     return(true);
-
-
-
                 case DragEvent.ACTION_DROP:
                     return(true);
-
-
-
                 case DragEvent.ACTION_DRAG_ENDED:
                     System.out.println("grid"+event.getResult());
                     return true;
-
-
-
                 // 收到一个未知的action type
                 default:
                     Log.e("DragDrop Example", "Unknown action type received by OnDragListener.");
 
                     break;
             }
-            return true;
+            return false;
         }
     }
     private class mBookDragListen implements View.OnDragListener  {
@@ -674,7 +683,7 @@ public class FragmentBook extends Fragment {
                     Log.e("DragDrop Example", "Unknown action type received by OnDragListener.");
                     break;
             }
-            return true;
+            return false;
         }
     }
 
