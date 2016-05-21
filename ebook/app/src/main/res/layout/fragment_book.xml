@@ -4,36 +4,43 @@
     android:id="@+id/fragment_book_scroll"
     android:background="#F2F2F2"
     >
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:id="@+id/fragment_book_layout"
         android:focusable="true"
         android:focusableInTouchMode="true"
         >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="#E4E4E4"></LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="#E4E4E4"
+            android:id="@+id/fragment_book_recent"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal"></LinearLayout>
 
-    <com.example.administrator.ebook.component.MyGridView
-        android:id="@+id/fragment_book_gridview"
-        android:gravity="center"
-        android:verticalSpacing="23dp"
-        android:horizontalSpacing="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        <com.example.administrator.ebook.component.MyGridView
+            android:id="@+id/fragment_book_gridview"
+            android:gravity="center"
+            android:verticalSpacing="23dp"
+            android:horizontalSpacing="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/fragment_book_recent"
 
-        android:stretchMode="none"
-        android:scrollbars="none"
-        android:paddingTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:numColumns="3">
+            android:stretchMode="none"
+            android:scrollbars="none"
+            android:paddingTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:numColumns="3">
 
-    </com.example.administrator.ebook.component.MyGridView>
-    </LinearLayout>
+        </com.example.administrator.ebook.component.MyGridView>
+
+
+
+
+    </RelativeLayout>
 
 </ScrollView>

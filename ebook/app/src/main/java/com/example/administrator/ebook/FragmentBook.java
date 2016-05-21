@@ -66,6 +66,7 @@ public class FragmentBook extends Fragment {
     private int gridViewItemWidth,gridViewItemHeight;
     private ScrollView scrollView;
     private double tabHeight;
+    private ImageView imageView;
 
     public static MyAdapter adapter;
 
@@ -241,6 +242,7 @@ public class FragmentBook extends Fragment {
 
     private void init(){
 
+        imageView = (ImageView)getActivity().findViewById(R.id.delete_img);
         //获取屏幕大小
         windowManager = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
@@ -280,19 +282,6 @@ public class FragmentBook extends Fragment {
                 return false;
             }
         });
-//        gridView.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent event) {
-//                switch(event.getAction()) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        System.out.println("手指落下");
-//                    case MotionEvent.ACTION_MOVE:
-//                        System.out.println("手指移动"+event.getRawY());
-//                }
-//                        return false;
-//            }
-//        });
-
     }
 
 
@@ -417,6 +406,7 @@ public class FragmentBook extends Fragment {
                             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
                             v.startDrag(data, shadowBuilder, v, 0);
                             v.setAlpha(0.3f);
+                            imageView.setVisibility(View.VISIBLE);
                             return false;
                         }
                     });
@@ -676,6 +666,7 @@ public class FragmentBook extends Fragment {
                     System.out.println("size is "+bookDataList.size());
                     return(true);
                 case DragEvent.ACTION_DRAG_ENDED:
+                    imageView.setVisibility(View.GONE);
                     v.setAlpha(1.0f);
                     return true;
                 // 收到一个未知的action type
