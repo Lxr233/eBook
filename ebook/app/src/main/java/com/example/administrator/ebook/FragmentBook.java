@@ -66,7 +66,7 @@ public class FragmentBook extends Fragment {
     private int gridViewItemWidth,gridViewItemHeight;
     private ScrollView scrollView;
     private double tabHeight;
-    private ImageView imageView;
+    private ImageView delImg;
 
     public static MyAdapter adapter;
 
@@ -242,7 +242,8 @@ public class FragmentBook extends Fragment {
 
     private void init(){
 
-        imageView = (ImageView)getActivity().findViewById(R.id.delete_img);
+        delImg = (ImageView)getActivity().findViewById(R.id.delete_img);
+        delImg.setTranslationX(100f);
         //获取屏幕大小
         windowManager = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
@@ -275,13 +276,14 @@ public class FragmentBook extends Fragment {
         gridView.setAdapter(adapter);
         scrollView.smoothScrollTo(0, 20);
         scrollView.setOnDragListener(new mScrollViewDragListen());
-        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                System.out.println("item 被长按" + position);
-                return false;
-            }
-        });
+        delImg.setOnDragListener(new mDeleteImageViewDragListen());
+//        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+//                System.out.println("item 被长按" + position);
+//                return false;
+//            }
+//        });
     }
 
 
@@ -302,50 +304,32 @@ public class FragmentBook extends Fragment {
     {
         private final int TYPE_BOOK=0,TYPE_BOOKSET=1,TYPE_COUNT=2;
         private LayoutInflater mInflater = null;
-        private MyAdapter(Context context)
-        {
-            //根据context上下文加载布局，这里的是Demo17Activity本身，即this
+        private MyAdapter(Context context) {
             this.mInflater = LayoutInflater.from(context);
         }
-
         @Override
         public int getCount() {
-            //How many items are in the data set represented by this Adapter.
-            //在此适配器中所代表的数据集中的条目数
-
             return bookDataList.size();
         }
-
-        /** 该方法返回多少个不同的布局*/
         @Override
         public int getViewTypeCount() {
-            // TODO Auto-generated method stub
             return TYPE_COUNT;
         }
-        /** 根据position返回相应的Item*/
         @Override
         public int getItemViewType(int position) {
-            // TODO Auto-generated method stub
             return bookDataList.get(position).getType();
         }
 
         @Override
         public Object getItem(int position) {
-            // Get the data item associated with the specified position in the data set.
-            //获取数据集中与指定索引对应的数据项
-            System.out.println("position size is " + bookDataList.size());
             return position;
         }
 
         @Override
         public long getItemId(int position) {
-            //Get the row id associated with the specified position in the list.
-            //获取在列表中与指定索引对应的行id
             return position;
         }
 
-        //Get a View that displays the data at the specified position in the data set.
-        //获取一个在数据集中指定索引的视图来显示数据
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
@@ -406,7 +390,9 @@ public class FragmentBook extends Fragment {
                             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
                             v.startDrag(data, shadowBuilder, v, 0);
                             v.setAlpha(0.3f);
-                            imageView.setVisibility(View.VISIBLE);
+//                            delImg.setVisibility(View.VISIBLE);
+                            delImg.animate().translationX(0f).setDuration(300);
+
                             return false;
                         }
                     });
@@ -442,11 +428,6 @@ public class FragmentBook extends Fragment {
                         loadBookSetBitmap(contentList.get(i).getImg(), viewHolderBookSet, contentWidth, contentHeight ,position,i );
 
                     }
-
-
-
-
-
                     viewMap.put(convertView, position);
                     convertView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -454,8 +435,24 @@ public class FragmentBook extends Fragment {
                             FragmentBookSet fragment = FragmentBookSet.newInstance(position);
                             FragmentManager manager = getFragmentManager();
                             FragmentTransaction transaction = manager.beginTransaction();
-                            transaction.add(R.id.drawer_layout, fragment,"bookset");
+                            transaction.add(R.id.drawer_layout, fragment, "bookset");
                             transaction.commit();
+                        }
+                    });
+                    convertView.setOnLongClickListener(new View.OnLongClickListener() {
+
+                        // 定义接口的方法，长按View时会被调用到
+                        public boolean onLongClick(View v) {
+                            ClipData.Item item = new ClipData.Item(String.valueOf(position));
+                            ClipData data = new ClipData("bookset-" + String.valueOf(position), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                            //ClipData data = ClipData.newPlainText("position", "1");
+                            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+                            v.startDrag(data, shadowBuilder, v, 0);
+                            v.setAlpha(0.3f);
+//                            delImg.setVisibility(View.VISIBLE);
+                            delImg.animate().translationX(0f).setDuration(300);
+
+                            return false;
                         }
                     });
                     convertView.setOnDragListener(new mBookDragListen());
@@ -489,6 +486,63 @@ public class FragmentBook extends Fragment {
         }
     };
 
+
+
+
+    private class mDeleteImageViewDragListen implements View.OnDragListener  {
+        int eventPosition;
+        int viewPosition;
+        int viewType ;
+        public boolean onDrag(View v, DragEvent event) {
+            final int action = event.getAction();
+            String[] label;
+            String type;
+            switch(action) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    label = event.getClipDescription().getLabel().toString().split("-");
+                    type = label[0];
+                    if(type.equals("bookset") ){
+                        viewType =1;
+                    }
+                    else
+                        viewType = 0;
+                    System.out.println("type:"+viewType);
+                    eventPosition = Integer.parseInt(label[1]);
+                    return true;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    delImg.setImageResource(R.drawable.intrash);
+                    delImg.animate().scaleX(1.2f);
+                    delImg.animate().scaleY(1.2f);
+                    return(true);
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    return(true);
+                case DragEvent.ACTION_DRAG_EXITED:
+                    delImg.setImageResource(R.drawable.trash);
+                    delImg.animate().scaleX(1f);
+                    delImg.animate().scaleY(1f);
+                    return(true);
+                case DragEvent.ACTION_DROP:
+                    DataSupport.delete(BookData.class, bookDataList.get(eventPosition).getId());
+                    if(viewType==1){
+                        DataSupport.deleteAll(BookSetContent.class, "bookdata_id = ?",String.valueOf(bookDataList.get(eventPosition).getId() ));
+                    }
+                    bookDataList.remove(eventPosition);
+                    adapter.notifyDataSetChanged();
+
+                    return(true);
+                case DragEvent.ACTION_DRAG_ENDED:
+                    delImg.setImageResource(R.drawable.trash);
+                    delImg.animate().scaleX(1f);
+                    delImg.animate().scaleY(1f);
+                    return true;
+                // 收到一个未知的action type
+                default:
+                    Log.e("DragDrop Example", "Unknown action type received by OnDragListener.");
+                    break;
+            }
+            return false;
+        }
+    }
     private class mScrollViewDragListen implements View.OnDragListener{
         // 这是系统向侦听器发送拖动事件时将会调用的方法
         public boolean onDrag(View v, DragEvent event) {
@@ -508,9 +562,6 @@ public class FragmentBook extends Fragment {
                     if(moveY < mDownScrollBorder && moveY > mUpScrollBorder){
                         mHandler.removeCallbacks(mScrollRunnable);
                     }
-
-
-
                     return(true);
                 case DragEvent.ACTION_DRAG_EXITED:
                     return(true);
@@ -666,7 +717,8 @@ public class FragmentBook extends Fragment {
                     System.out.println("size is "+bookDataList.size());
                     return(true);
                 case DragEvent.ACTION_DRAG_ENDED:
-                    imageView.setVisibility(View.GONE);
+                    delImg.animate().translationX(100f).setDuration(300);
+//                    delImg.setVisibility(View.GONE);
                     v.setAlpha(1.0f);
                     return true;
                 // 收到一个未知的action type
