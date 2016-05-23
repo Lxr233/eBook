@@ -57,6 +57,7 @@ public class FragmentBookSet extends Fragment {
     private String bookSetName;
     private ImageView delImg;
     private static Map<Integer,View > viewMap;
+    public static boolean isOut;
 
 
 
@@ -84,6 +85,7 @@ public class FragmentBookSet extends Fragment {
 
 
     private void init(){
+        isOut =false;
         Singleton s1 = Singleton.getInstance();
         screenWidth = s1.getScreenWidth();
         screenHeight = s1.getScreenHeight() ;
@@ -206,13 +208,26 @@ public class FragmentBookSet extends Fragment {
         ImageView img;
     }
 
-    public static void notifyContent(int position){
-        if(adapter!=null&&contentList.size()!=0){
+    public static boolean notifyContent(int position){
+        System.out.println(isOut);
+        if(adapter!=null&&contentList.size()!=0&&!isOut){
             viewMap.get(position).setAlpha(1.0f);
             DataSupport.delete(BookSetContent.class, contentList.get(position).getId());
             contentList.remove(position);
             adapter.notifyDataSetChanged();
+            return true;
         }
+        return false;
+    }
+
+    public static BookSetContent removeContent(int position){
+        if(adapter!=null&&contentList.size()!=0){
+            DataSupport.delete(BookSetContent.class, contentList.get(position).getId());
+            BookSetContent bookSetContent = contentList.get(position);
+            contentList.remove(position);
+            return bookSetContent;
+        }
+        return null;
     }
 
 
@@ -326,7 +341,7 @@ public class FragmentBookSet extends Fragment {
                 // 定义接口的方法，长按View时会被调用到
                 public boolean onLongClick(View v) {
                     ClipData.Item item = new ClipData.Item(String.valueOf(p));
-                    ClipData data = new ClipData("bookcontent-" + String.valueOf(position), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                    ClipData data = new ClipData("bookcontent-" + String.valueOf(position)+"-"+String.valueOf(p), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
                     //ClipData data = ClipData.newPlainText("position", "1");
                     View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
                     v.startDrag(data, shadowBuilder, v, 0);

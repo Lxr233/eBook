@@ -279,13 +279,7 @@ public class FragmentBook extends Fragment {
         scrollView.smoothScrollTo(0, 20);
         scrollView.setOnDragListener(new mScrollViewDragListen());
         delImg.setOnDragListener(new mDeleteImageViewDragListen());
-//        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-//                System.out.println("item 被长按" + position);
-//                return false;
-//            }
-//        });
+
     }
 
 
@@ -380,7 +374,7 @@ public class FragmentBook extends Fragment {
 
                     //使用缓存并异步加载图片
                     viewHolderBook.position = position;
-                    loadBookBitmap(bookData.getImg(), viewHolderBook.img , position);
+                    loadBookBitmap(bookData.getImg(), viewHolderBook.img, position);
 
                     convertView.setOnLongClickListener(new View.OnLongClickListener() {
 
@@ -458,8 +452,6 @@ public class FragmentBook extends Fragment {
                         }
                     });
                     convertView.setOnDragListener(new mBookDragListen());
-
-
                     break;
             }
             return convertView;
@@ -528,11 +520,13 @@ public class FragmentBook extends Fragment {
                     return(true);
                 case DragEvent.ACTION_DROP:
                     if(viewType==2){
-                        int p = Integer.parseInt(event.getClipData().getItemAt(0).getText().toString());
-                        BookData bookData = bookDataList.get(p);
-                        bookData.setContentCount(bookData.getContentCount()-1);
-                        bookData.setMsg("共 "+bookData.getContentCount()+"本");
-                        FragmentBookSet.notifyContent(eventPosition);
+                        if(FragmentBookSet.notifyContent(eventPosition)){
+                            int p = Integer.parseInt(event.getClipData().getItemAt(0).getText().toString());
+                            BookData bookData = bookDataList.get(p);
+                            bookData.setContentCount(bookData.getContentCount() - 1);
+                            bookData.setMsg("共 " + bookData.getContentCount() + "本");
+                            bookData.save();
+                        }
                     }
                     else {
                         DataSupport.delete(BookData.class, bookDataList.get(eventPosition).getId());
@@ -559,6 +553,12 @@ public class FragmentBook extends Fragment {
         }
     }
     private class mScrollViewDragListen implements View.OnDragListener{
+        String[] label;
+        String type;
+        int eventPosition;
+        BookSetContent bookSetContent;
+        BookData bookData ;
+        int first;
         // 这是系统向侦听器发送拖动事件时将会调用的方法
         public boolean onDrag(View v, DragEvent event) {
 
@@ -567,10 +567,34 @@ public class FragmentBook extends Fragment {
             // 处理所有需要的事件
             switch(action) {
                 case DragEvent.ACTION_DRAG_STARTED:
+                    first=1;
                     return true;
                 case DragEvent.ACTION_DRAG_ENTERED:
+                    System.out.println("书集合里的书进入");
+                    label = event.getClipDescription().getLabel().toString().split("-");
+                    type = label[0];
+                    eventPosition= Integer.parseInt(label[1]);
+                    if(first==1){
+                        first++;
+                        if(type.equals("bookcontent")){
+                            FragmentBookSet.isOut = true;
+
+                            bookSetContent = FragmentBookSet.removeContent(eventPosition);
+
+
+                            int p = Integer.parseInt(label[2]);
+                            bookData = bookDataList.get(p);
+                            bookData.setContentCount(bookData.getContentCount() - 1);
+                            bookData.setMsg("共 " + bookData.getContentCount() + "本");
+                            bookData.save();
+                            adapter.notifyDataSetChanged();
+                         }
+
+
+                    }
                     return(true);
                 case DragEvent.ACTION_DRAG_LOCATION:
+
                     moveY = event.getY();
                     mHandler.post(mScrollRunnable);
                     if(moveY < mDownScrollBorder && moveY > mUpScrollBorder){
@@ -580,6 +604,17 @@ public class FragmentBook extends Fragment {
                 case DragEvent.ACTION_DRAG_EXITED:
                     return(true);
                 case DragEvent.ACTION_DROP:
+                    if(type.equals("bookcontent")){
+
+                        BookData bookData = new BookData();
+                        bookData.setImg(bookSetContent.getImg());
+                        bookData.setName(bookSetContent.getName());
+                        bookData.setMsg(bookSetContent.getMsg());
+                        bookData.setType(0);
+                        bookData.save();
+                        bookDataList.add(bookData);
+                        adapter.notifyDataSetChanged();
+                    }
                     return(true);
                 case DragEvent.ACTION_DRAG_ENDED:
                     System.out.println("grid"+event.getResult());
@@ -751,12 +786,4 @@ public class FragmentBook extends Fragment {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
-
-
-
-
-
-
-
-
 }

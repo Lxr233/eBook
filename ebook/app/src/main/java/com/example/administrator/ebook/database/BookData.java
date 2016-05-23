@@ -24,9 +24,6 @@ public class BookData extends DataSupport {
         this.id = id;
     }
 
-
-
-
     private int contentCount;
 
     private List<BookSetContent> contentList = new ArrayList<BookSetContent>();
