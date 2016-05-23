@@ -4,6 +4,7 @@ package com.example.administrator.ebook;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -78,6 +79,7 @@ public class FragmentBook extends Fragment {
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -504,8 +506,11 @@ public class FragmentBook extends Fragment {
                     if(type.equals("bookset") ){
                         viewType =1;
                     }
-                    else
+                    else if(type.equals("book")){
                         viewType = 0;
+                    }
+                    else
+                        viewType = 2;
                     System.out.println("type:"+viewType);
                     eventPosition = Integer.parseInt(label[1]);
                     return true;
@@ -522,11 +527,21 @@ public class FragmentBook extends Fragment {
                     delImg.animate().scaleY(1f);
                     return(true);
                 case DragEvent.ACTION_DROP:
-                    DataSupport.delete(BookData.class, bookDataList.get(eventPosition).getId());
-                    if(viewType==1){
-                        DataSupport.deleteAll(BookSetContent.class, "bookdata_id = ?",String.valueOf(bookDataList.get(eventPosition).getId() ));
+                    if(viewType==2){
+                        int p = Integer.parseInt(event.getClipData().getItemAt(0).getText().toString());
+                        BookData bookData = bookDataList.get(p);
+                        bookData.setContentCount(bookData.getContentCount()-1);
+                        bookData.setMsg("共 "+bookData.getContentCount()+"本");
+                        FragmentBookSet.notifyContent(eventPosition);
                     }
-                    bookDataList.remove(eventPosition);
+                    else {
+                        DataSupport.delete(BookData.class, bookDataList.get(eventPosition).getId());
+                        if(viewType==1){
+                            DataSupport.deleteAll(BookSetContent.class, "bookdata_id = ?",String.valueOf(bookDataList.get(eventPosition).getId() ));
+                        }
+                        bookDataList.remove(eventPosition);
+
+                    }
                     adapter.notifyDataSetChanged();
 
                     return(true);
@@ -556,7 +571,6 @@ public class FragmentBook extends Fragment {
                 case DragEvent.ACTION_DRAG_ENTERED:
                     return(true);
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    System.out.println("position is"+event.getY());
                     moveY = event.getY();
                     mHandler.post(mScrollRunnable);
                     if(moveY < mDownScrollBorder && moveY > mUpScrollBorder){

@@ -16,7 +16,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,20 +40,25 @@ import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class FragmentBookSet extends Fragment {
     private EditText et;
     private LinearLayout linearLayout;
-    private List<BookSetContent> contentList = new ArrayList<BookSetContent>();
+    private static List<BookSetContent> contentList = new ArrayList<BookSetContent>();
     private GridView gridView;
     private int p; //存储传过来的bookdatalist的位置
     private WindowManager windowManager;
     private int screenHeight,screenWidth;
     private int gridViewItemWidth,gridViewItemHeight;
-    private MyBookSetAdapter adapter;
+    private static MyBookSetAdapter adapter;
     private String bookSetName;
+    private ImageView delImg;
+    private static Map<Integer,View > viewMap;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,6 +73,7 @@ public class FragmentBookSet extends Fragment {
             System.out.println("position is "+p);
         }
 
+
         init();
         getDatabase();
         initBackground();
@@ -74,19 +82,18 @@ public class FragmentBookSet extends Fragment {
 
     }
 
+
     private void init(){
         Singleton s1 = Singleton.getInstance();
         screenWidth = s1.getScreenWidth();
         screenHeight = s1.getScreenHeight() ;
         gridViewItemHeight = s1.getGridViewItemHeight();
         gridViewItemWidth = s1.getGridViewItemWidth();
+        viewMap = new HashMap<Integer,View >();
 
         gridView.setColumnWidth((int) (gridViewItemWidth * 1.1));
         adapter = new MyBookSetAdapter(getContext());
         gridView.setAdapter(adapter);
-
-
-
     }
 
     private void initListener(){
@@ -118,14 +125,56 @@ public class FragmentBookSet extends Fragment {
 
             }
         });
-//        et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean hasFocus) {
-//                if(!hasFocus){
-//
-//                }
-//            }
-//        });
+        linearLayout.setOnDragListener(new mLinearLayoutDragListen());
+
+    }
+
+
+    private class mLinearLayoutDragListen implements View.OnDragListener  {
+        int eventPosition;
+        int viewPosition;
+        int viewType ;
+        public boolean onDrag(View v, DragEvent event) {
+            final int action = event.getAction();
+            String[] label;
+            String type;
+            switch(action) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    return true;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    return(true);
+                case DragEvent.ACTION_DRAG_LOCATION:
+
+                    if(event.getY()<dptopx(getContext(), 90)){
+
+                        FragmentManager manager = getFragmentManager();
+                        Fragment fragment = manager.findFragmentByTag("bookset");
+                        FragmentTransaction transaction = manager.beginTransaction();
+                        transaction.remove(fragment);
+                        transaction.commit();
+                    }
+                    return(true);
+                case DragEvent.ACTION_DRAG_EXITED:
+                    return(true);
+                case DragEvent.ACTION_DROP:
+                    label = event.getClipDescription().getLabel().toString().split("-");
+                    eventPosition = Integer.parseInt(label[1]);
+                    viewMap.get(eventPosition).setAlpha(1.0f);
+                    return(true);
+                case DragEvent.ACTION_DRAG_ENDED:
+
+                    delImg.setImageResource(R.drawable.trash);
+                    delImg.animate().scaleX(1f);
+                    delImg.animate().scaleY(1f);
+
+                    return true;
+                // 收到一个未知的action type
+                default:
+                    Log.e("DragDrop Example", "Unknown action type received by OnDragListener.");
+                    break;
+            }
+            return false;
+        }
     }
 
     private void initBackground(){
@@ -147,6 +196,9 @@ public class FragmentBookSet extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        //因为使用的是同一个imageview，由于在上一个Fragment中已经注册过监听器，所以这里不需要再注册
+        delImg = (ImageView)getActivity().findViewById(R.id.delete_img);
+        delImg.setTranslationX(100f);
     }
 
     static class ViewHolderBook{
@@ -154,6 +206,14 @@ public class FragmentBookSet extends Fragment {
         ImageView img;
     }
 
+    public static void notifyContent(int position){
+        if(adapter!=null&&contentList.size()!=0){
+            viewMap.get(position).setAlpha(1.0f);
+            DataSupport.delete(BookSetContent.class, contentList.get(position).getId());
+            contentList.remove(position);
+            adapter.notifyDataSetChanged();
+        }
+    }
 
 
 
@@ -219,35 +279,24 @@ public class FragmentBookSet extends Fragment {
 
     public class MyBookSetAdapter extends BaseAdapter {
         private LayoutInflater mInflater = null;
-
         private MyBookSetAdapter(Context context) {
-            //根据context上下文加载布局，这里的是Demo17Activity本身，即this
             this.mInflater = LayoutInflater.from(context);
         }
 
         @Override
         public int getCount() {
-            //How many items are in the data set represented by this Adapter.
-            //在此适配器中所代表的数据集中的条目数
             return contentList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            // Get the data item associated with the specified position in the data set.
-            //获取数据集中与指定索引对应的数据项
             return position;
         }
 
         @Override
         public long getItemId(int position) {
-            //Get the row id associated with the specified position in the list.
-            //获取在列表中与指定索引对应的行id
             return position;
         }
-
-        //Get a View that displays the data at the specified position in the data set.
-        //获取一个在数据集中指定索引的视图来显示数据
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
@@ -272,7 +321,27 @@ public class FragmentBookSet extends Fragment {
             viewHolderBook.img.setLayoutParams(imgParams);
             viewHolderBook.img.setImageBitmap(
                     Singleton.getInstance().decodeSampledBitmapFromResource(getResources(), contentList.get(position).getImg(), gridViewItemWidth, gridViewItemHeight));
+            convertView.setOnLongClickListener(new View.OnLongClickListener() {
+
+                // 定义接口的方法，长按View时会被调用到
+                public boolean onLongClick(View v) {
+                    ClipData.Item item = new ClipData.Item(String.valueOf(p));
+                    ClipData data = new ClipData("bookcontent-" + String.valueOf(position), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                    //ClipData data = ClipData.newPlainText("position", "1");
+                    View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+                    v.startDrag(data, shadowBuilder, v, 0);
+                    v.setAlpha(0.3f);
+//                            delImg.setVisibility(View.VISIBLE);
+                    delImg.animate().translationX(0f).setDuration(300);
+                    return false;
+                }
+            });
+            viewMap.put(position,convertView);
             return convertView;
         }
+    }
+    public static int dptopx(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 }

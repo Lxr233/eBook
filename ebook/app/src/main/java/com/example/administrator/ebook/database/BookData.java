@@ -15,7 +15,7 @@ public class BookData extends DataSupport {
     private String name;
     private String msg;
     private int type;
-
+    private int id;
     public int getId() {
         return id;
     }
@@ -24,7 +24,7 @@ public class BookData extends DataSupport {
         this.id = id;
     }
 
-    private int id;
+
 
 
     private int contentCount;
