@@ -584,9 +584,17 @@ public class FragmentBook extends Fragment {
 
                             int p = Integer.parseInt(label[2]);
                             bookData = bookDataList.get(p);
-                            bookData.setContentCount(bookData.getContentCount() - 1);
-                            bookData.setMsg("共 " + bookData.getContentCount() + "本");
-                            bookData.save();
+
+                            if(bookData.getContentCount() - 1==0){
+                                DataSupport.delete(BookData.class, bookDataList.get(p).getId());
+                                bookDataList.remove(p);
+                            }
+                            else{
+                                bookData.setContentCount(bookData.getContentCount() - 1);
+                                bookData.setMsg("共 " + bookData.getContentCount() + "本");
+                                bookData.save();
+                            }
+
                             adapter.notifyDataSetChanged();
                          }
 
