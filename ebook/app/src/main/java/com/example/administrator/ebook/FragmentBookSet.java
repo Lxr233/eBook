@@ -341,7 +341,7 @@ public class FragmentBookSet extends Fragment {
                 // 定义接口的方法，长按View时会被调用到
                 public boolean onLongClick(View v) {
                     ClipData.Item item = new ClipData.Item(String.valueOf(p));
-                    ClipData data = new ClipData("bookcontent-" + String.valueOf(position)+"-"+String.valueOf(p), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                    ClipData data = new ClipData("bookcontent-" + String.valueOf(p)+"-"+String.valueOf(position), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
                     //ClipData data = ClipData.newPlainText("position", "1");
                     View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
                     v.startDrag(data, shadowBuilder, v, 0);

@@ -487,6 +487,7 @@ public class FragmentBook extends Fragment {
         int eventPosition;
         int viewPosition;
         int viewType ;
+        int p;
         public boolean onDrag(View v, DragEvent event) {
             final int action = event.getAction();
             String[] label;
@@ -505,6 +506,9 @@ public class FragmentBook extends Fragment {
                         viewType = 2;
                     System.out.println("type:"+viewType);
                     eventPosition = Integer.parseInt(label[1]);
+                    if(viewType ==2){
+                        p = Integer.parseInt(label[2]);
+                    }
                     return true;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     delImg.setImageResource(R.drawable.intrash);
@@ -520,9 +524,8 @@ public class FragmentBook extends Fragment {
                     return(true);
                 case DragEvent.ACTION_DROP:
                     if(viewType==2){
-                        if(FragmentBookSet.notifyContent(eventPosition)){
-                            int p = Integer.parseInt(event.getClipData().getItemAt(0).getText().toString());
-                            BookData bookData = bookDataList.get(p);
+                        if(FragmentBookSet.notifyContent(p)){
+                            BookData bookData = bookDataList.get(eventPosition);
                             bookData.setContentCount(bookData.getContentCount() - 1);
                             bookData.setMsg("共 " + bookData.getContentCount() + "本");
                             bookData.save();
@@ -578,16 +581,14 @@ public class FragmentBook extends Fragment {
                         first++;
                         if(type.equals("bookcontent")){
                             FragmentBookSet.isOut = true;
-
-                            bookSetContent = FragmentBookSet.removeContent(eventPosition);
-
-
                             int p = Integer.parseInt(label[2]);
-                            bookData = bookDataList.get(p);
+                            bookSetContent = FragmentBookSet.removeContent(p);
+
+                            bookData = bookDataList.get(eventPosition);
 
                             if(bookData.getContentCount() - 1==0){
-                                DataSupport.delete(BookData.class, bookDataList.get(p).getId());
-                                bookDataList.remove(p);
+                                DataSupport.delete(BookData.class, bookDataList.get(eventPosition).getId());
+                                bookDataList.remove(eventPosition);
                             }
                             else{
                                 bookData.setContentCount(bookData.getContentCount() - 1);
@@ -596,7 +597,7 @@ public class FragmentBook extends Fragment {
                             }
 
                             adapter.notifyDataSetChanged();
-                         }
+                        }
 
 
                     }
@@ -657,9 +658,14 @@ public class FragmentBook extends Fragment {
                     if (type.equals("book")){
                         return true;
                     }
+//                    else if(type.equals("bookcontent")) {
+//                        return true;
+//                    }
                     //若拖拽的控件是bookset控件，则不会监听之后的动作
-                    else
+                    else{
                         return false;
+                    }
+
                 case DragEvent.ACTION_DRAG_ENTERED:
                     if(bookDataList.get(viewPosition).getType()==0){
                         if(!(viewMap.get(v) == eventPosition)){
