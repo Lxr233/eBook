@@ -23,7 +23,7 @@ public class BaseActivity extends FragmentActivity {
 
     private LinearLayout containterLayout;
 
-    private ImageView imageView;
+    private ImageView imageView,importBook;
     private FloatingActionButton floatBt;
     private PopupWindow mPopupWindow;
 
@@ -40,6 +40,19 @@ public class BaseActivity extends FragmentActivity {
         mPopupWindow.setOutsideTouchable(true);
         mPopupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
         mPopupWindow.setAnimationStyle(R.style.anim_menu_bottombar);
+        importBook = (ImageView)mPopupWindow.getContentView().findViewById(R.id.importbook);
+
+        initListener();
+
+    }
+
+    private void initListener(){
+        importBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("导入");
+            }
+        });
         floatBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,13 +72,6 @@ public class BaseActivity extends FragmentActivity {
         });
     }
 
-    public void showItem(){
-        imageView.setVisibility(View.VISIBLE);
-    }
-
-    public void hideItem(){
-        imageView.setVisibility(View.GONE);
-    }
 
     @Override
     public void setContentView(int layoutResID) {
