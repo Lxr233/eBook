@@ -245,7 +245,7 @@ public class FragmentBook extends Fragment {
     private void init(){
 
         delImg = (ImageView)getActivity().findViewById(R.id.delete_img);
-        delImg.setTranslationX(100f);
+        delImg.setTranslationX(dptopx(getContext(),100));
         //获取屏幕大小
         windowManager = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
@@ -780,7 +780,7 @@ public class FragmentBook extends Fragment {
                     System.out.println("size is "+bookDataList.size());
                     return(true);
                 case DragEvent.ACTION_DRAG_ENDED:
-                    delImg.animate().translationX(100f).setDuration(300);
+                    delImg.animate().translationX(dptopx(getContext(),100)).setDuration(300);
 //                    delImg.setVisibility(View.GONE);
                     v.setAlpha(1.0f);
                     return true;

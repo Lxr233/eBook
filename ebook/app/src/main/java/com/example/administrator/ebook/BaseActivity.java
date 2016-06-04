@@ -1,5 +1,6 @@
 package com.example.administrator.ebook;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
 import com.example.administrator.ebook.R;
+import com.example.administrator.ebook.importbook.FileExplorer;
 
 /**
  * Created by Lxr on 2016/5/21.
@@ -26,6 +28,9 @@ public class BaseActivity extends FragmentActivity {
     private ImageView imageView,importBook;
     private FloatingActionButton floatBt;
     private PopupWindow mPopupWindow;
+
+    private static final int REQUEST_PATH = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,8 @@ public class BaseActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 System.out.println("导入");
+                Intent intent1 = new Intent(BaseActivity.this, FileExplorer.class);
+                startActivityForResult(intent1, REQUEST_PATH);
             }
         });
         floatBt.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +77,16 @@ public class BaseActivity extends FragmentActivity {
                 });
             }
         });
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        // See which child activity is calling us back.
+        if (requestCode == REQUEST_PATH){
+            if (resultCode == RESULT_OK) {
+                System.out.println("返回的是"+data.getStringExtra("GetFileName"));
+
+            }
+        }
     }
 
 

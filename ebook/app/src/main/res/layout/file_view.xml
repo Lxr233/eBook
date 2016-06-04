@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="60dp" android:orientation="vertical" android:layout_width="match_parent">
+
+        <ImageView
+            android:id="@+id/file_img"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:src="@drawable/file">
+        </ImageView>
+
+        <TextView
+            android:id="@+id/file_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textStyle="bold"
+            android:layout_toRightOf="@+id/file_img"
+            android:layout_marginTop="10dip"
+            android:layout_marginLeft="5dip"
+            android:textSize="15sp"
+            android:text="aaa">
+
+
+        </TextView>
+        <TextView
+            android:id="@+id/file_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/file_img"
+            android:layout_below="@+id/file_name"
+            android:layout_marginLeft="5dip"
+            android:textSize="11sp"
+            android:text="bbb">
+
+        </TextView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/file_daoru"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:visibility="gone"
+        android:text="已导入"/>
+</RelativeLayout>
