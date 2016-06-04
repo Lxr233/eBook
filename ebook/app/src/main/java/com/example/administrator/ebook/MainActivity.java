@@ -20,6 +20,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.administrator.ebook.database.BookData;
+
+import org.litepal.crud.DataSupport;
 
 public class MainActivity extends BaseActivity {
 
@@ -112,6 +117,16 @@ public class MainActivity extends BaseActivity {
 
         viewPager.addOnPageChangeListener(new MyOnPageChangeListener());
     }
+
+    @Override
+    protected void notifyBookChange(){
+        System.out.println("重写函数");
+        FragmentBook.bookDataList =   DataSupport.findAll(BookData.class);
+        FragmentBook.adapter.notifyDataSetChanged();
+        Toast.makeText(getApplicationContext(), "导入成功", Toast.LENGTH_SHORT).show();
+    }
+
+
 
     public void initTextView(){
         TabBook = (TextView)findViewById(R.id.tab_book);

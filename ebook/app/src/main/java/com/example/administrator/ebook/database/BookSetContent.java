@@ -10,6 +10,25 @@ public class BookSetContent extends DataSupport {
     private String name;
     private String msg;
     private int id;
+    private String path;
+    private String fileType;
+
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
     public int getId() {
         return id;
     }

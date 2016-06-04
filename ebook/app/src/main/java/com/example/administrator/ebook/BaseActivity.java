@@ -16,6 +16,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
 import com.example.administrator.ebook.R;
+import com.example.administrator.ebook.database.BookData;
 import com.example.administrator.ebook.importbook.FileExplorer;
 
 /**
@@ -83,10 +84,26 @@ public class BaseActivity extends FragmentActivity {
         // See which child activity is calling us back.
         if (requestCode == REQUEST_PATH){
             if (resultCode == RESULT_OK) {
-                System.out.println("返回的是"+data.getStringExtra("GetFileName"));
+//                System.out.println("返回的是" + data.getStringExtra("GetFilePath") + "   " + data.getStringExtra("GetFileName"));
 
+                String[] name =data.getStringExtra("GetFileName").split("\\.");
+                String bookName = name[0];
+
+                BookData bookData = new BookData();
+                bookData.setImg(R.drawable.book1);
+                bookData.setName(bookName);
+                bookData.setMsg("已读 0%");
+                bookData.setType(0);
+                bookData.setFileType(data.getStringExtra("GetType"));
+                bookData.setPath(data.getStringExtra("GetFilePath"));
+                bookData.save();
+                notifyBookChange();
             }
         }
+    }
+
+    protected void notifyBookChange(){
+
     }
 
 

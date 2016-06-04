@@ -200,7 +200,7 @@ public class FragmentBookSet extends Fragment {
 
         //因为使用的是同一个imageview，由于在上一个Fragment中已经注册过监听器，所以这里不需要再注册
         delImg = (ImageView)getActivity().findViewById(R.id.delete_img);
-        delImg.setTranslationX(100f);
+        delImg.setTranslationX(dptopx(getContext(),100));
     }
 
     static class ViewHolderBook{

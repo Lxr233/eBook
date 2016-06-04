@@ -8,6 +8,7 @@ public class Item implements Comparable<Item>{
     private String path;
     private String type;
     private String msg;
+    private boolean hasImport = false;
 
     public Item(String n,String m, String p, String t)
     {
@@ -15,6 +16,16 @@ public class Item implements Comparable<Item>{
         msg = m;
         path = p;
         type = t;
+
+    }
+
+    public Item(String n,String m, String p, String t,boolean h)
+    {
+        name = n;
+        msg = m;
+        path = p;
+        type = t;
+        hasImport = h;
 
     }
     public String getName()
@@ -26,7 +37,7 @@ public class Item implements Comparable<Item>{
     {
         return path;
     }
-
+    public boolean getHasImport(){return hasImport;}
     public String getType(){
         return type;
     }

@@ -9,8 +9,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.administrator.ebook.R;
+import com.example.administrator.ebook.database.BookData;
+import com.example.administrator.ebook.database.BookSetContent;
+
+import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,7 +50,13 @@ public class FileExplorer extends Activity {
                     currentDir = new File(o.getPath());
                     inflateListView(currentDir);
                 } else {
-                    onFileClick(o);
+                    if(o.getHasImport()){
+                        Toast.makeText(getApplicationContext(), "不能重复导入", Toast.LENGTH_SHORT).show();
+                    }
+                    else if(o.getType().equals("txt"))
+                        onFileClick(o);
+                    else
+                        Toast.makeText(getApplicationContext(), "目前不支持导入该格式文件", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -75,11 +86,7 @@ public class FileExplorer extends Activity {
                 }
                 else
                 {
-
-//
-//                    String fileCode=(String)System.getProperties().get("file.encoding");
                     String fileName = ff.getName();
-//                    fileName = new String (fileName.getBytes(fileCode),fileCode);
                     String prefix=fileName.substring(fileName.lastIndexOf(".") + 1);
                     System.out.println("后缀"+prefix);
 
@@ -93,13 +100,21 @@ public class FileExplorer extends Activity {
 
                     String msg;
                     msg = "类型:"+prefix+" / 大小:"+size;
+                    boolean hasImport;
+                    List<BookData> bookDataList = DataSupport.where("path = ?", ff.getAbsolutePath()).find(BookData.class);
+                    List<BookSetContent> bookSetContentList = DataSupport.where("path = ?", ff.getAbsolutePath()).find(BookSetContent.class);
+                    if(!bookDataList.isEmpty()||!bookSetContentList.isEmpty()){
+                        hasImport = true;//表示已经导入
+                    }
+                    else
+                        hasImport = false;
 
                     if(prefix.equals("txt"))
-                        fls.add(new Item(ff.getName(),msg,  ff.getAbsolutePath(),"txt"));
+                        fls.add(new Item(ff.getName(),msg,  ff.getAbsolutePath(),"txt",hasImport));
                     else if(prefix.equals("epub"))
-                        fls.add(new Item(ff.getName(),msg,  ff.getAbsolutePath(),"epub"));
+                        fls.add(new Item(ff.getName(),msg,  ff.getAbsolutePath(),"epub",hasImport));
                     else
-                        fls.add(new Item(ff.getName(),msg,  ff.getAbsolutePath(),"file"));
+                        fls.add(new Item(ff.getName(),msg,  ff.getAbsolutePath(),"file",hasImport));
                 }
             }
         }
@@ -118,10 +133,11 @@ public class FileExplorer extends Activity {
 
     private void onFileClick(Item o)
     {
-        //Toast.makeText(this, "Folder Clicked: "+ currentDir, Toast.LENGTH_SHORT).show();
+
         Intent intent = new Intent();
-        intent.putExtra("GetPath", currentDir.toString());
-        intent.putExtra("GetFileName", o.getPath());
+//        intent.putExtra("GetType", o.getType());
+        intent.putExtra("GetFilePath", o.getPath());
+        intent.putExtra("GetFileName", o.getName());
         setResult(RESULT_OK, intent);
         finish();
     }

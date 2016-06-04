@@ -210,7 +210,7 @@ public class FragmentBook extends Fragment {
         if(!sharedPreferences.contains("times")){
             editor.putInt("times",1);
             editor.commit();
-            for(int i =1 ; i<=4;i++){
+            for(int i =1 ; i<=2;i++){
                 bookData = new BookData();
                 bookData.setImg(R.drawable.book1);
                 bookData.setName("DATA A LIVE 9");
@@ -238,7 +238,6 @@ public class FragmentBook extends Fragment {
         }
         else{
             bookDataList =  DataSupport.findAll(BookData.class);
-            System.out.println("database is " + bookDataList);
         }
     }
 
@@ -619,6 +618,8 @@ public class FragmentBook extends Fragment {
                         bookData.setImg(bookSetContent.getImg());
                         bookData.setName(bookSetContent.getName());
                         bookData.setMsg(bookSetContent.getMsg());
+                        bookData.setPath(bookSetContent.getPath());
+                        bookData.setFileType(bookSetContent.getFileType());
                         bookData.setType(0);
                         bookData.save();
                         bookDataList.add(bookData);
@@ -723,6 +724,8 @@ public class FragmentBook extends Fragment {
                             content.setImg(bookDataList.get(viewPosition).getImg());
                             content.setName(bookDataList.get(viewPosition).getName());
                             content.setMsg(bookDataList.get(viewPosition).getMsg());
+                            content.setPath(bookDataList.get(viewPosition).getPath());
+                            content.setFileType(bookDataList.get(viewPosition).getFileType());
                             content.setBookdata_id(bookDataList.get(viewPosition).getId());
                             content.save();
 
@@ -731,6 +734,8 @@ public class FragmentBook extends Fragment {
                             content.setImg(bookDataList.get(eventPosition).getImg());
                             content.setName(bookDataList.get(eventPosition).getName());
                             content.setMsg(bookDataList.get(eventPosition).getMsg());
+                            content.setPath(bookDataList.get(eventPosition).getPath());
+                            content.setFileType(bookDataList.get(eventPosition).getFileType());
                             content.setBookdata_id(bookDataList.get(viewPosition).getId());
                             content.save();
 
@@ -762,6 +767,8 @@ public class FragmentBook extends Fragment {
                         BookSetContent content = new BookSetContent();
                         content.setImg(bookDataList.get(eventPosition).getImg());
                         content.setName(bookDataList.get(eventPosition).getName());
+                        content.setPath(bookDataList.get(eventPosition).getPath());
+                        content.setFileType(bookDataList.get(eventPosition).getFileType());
                         content.setMsg(bookDataList.get(eventPosition).getMsg());
                         content.setBookdata_id(bookData.getId());
                         content.save();

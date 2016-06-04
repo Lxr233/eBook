@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.administrator.ebook.R;
+import com.example.administrator.ebook.database.BookData;
+
+import org.litepal.crud.DataSupport;
 
 import java.util.List;
 
@@ -46,8 +49,15 @@ public class FileArrayAdapter extends ArrayAdapter<Item> {
         if (o != null) {
             TextView t1 = (TextView) v.findViewById(R.id.file_name);
             TextView t2 = (TextView) v.findViewById(R.id.file_msg);
+            TextView t3 = (TextView)v.findViewById(R.id.file_daoru);
 
-                       /* Take the ImageView from layout and set the city's image */
+            if(o.getHasImport()){
+                    t3.setVisibility(View.VISIBLE);
+            }
+            else
+                t3.setVisibility(View.GONE);
+
+
             ImageView img = (ImageView) v.findViewById(R.id.file_img);
             switch (o.getType()){
                 case "file":
@@ -71,8 +81,6 @@ public class FileArrayAdapter extends ArrayAdapter<Item> {
 
             t1.setText(o.getName());
             t2.setText(o.getMsg());
-
-
 
         }
         return v;
