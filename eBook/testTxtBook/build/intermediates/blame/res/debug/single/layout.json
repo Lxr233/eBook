@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\debug\\layout\\txtview_loadinglayout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\res\\layout\\txtview_loadinglayout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\debug\\layout\\txtprogressmenu_layout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\res\\layout\\txtprogressmenu_layout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\debug\\layout\\nodatalayout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\res\\layout\\nodatalayout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\debug\\layout\\txttest_activity_main.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\res\\layout\\txttest_activity_main.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\debug\\layout\\txtlightmenu.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\res\\layout\\txtlightmenu.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\debug\\layout\\txttextmenu_layout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\res\\layout\\txttextmenu_layout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\debug\\layout\\txt_testactivity_layout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\res\\layout\\txt_testactivity_layout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\debug\\layout\\txtstylemenu_layout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\res\\layout\\txtstylemenu_layout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\debug\\layout\\txtmenu_layout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\res\\layout\\txtmenu_layout.xml"
+    }
+]
