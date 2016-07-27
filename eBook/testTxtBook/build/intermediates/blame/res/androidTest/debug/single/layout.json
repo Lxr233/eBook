@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\txtmenu_layout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\bundles\\debug\\res\\layout\\txtmenu_layout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\txttextmenu_layout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\bundles\\debug\\res\\layout\\txttextmenu_layout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\txtprogressmenu_layout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\bundles\\debug\\res\\layout\\txtprogressmenu_layout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\txtview_loadinglayout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\bundles\\debug\\res\\layout\\txtview_loadinglayout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\txtlightmenu.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\bundles\\debug\\res\\layout\\txtlightmenu.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\txttest_activity_main.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\bundles\\debug\\res\\layout\\txttest_activity_main.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\txt_testactivity_layout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\bundles\\debug\\res\\layout\\txt_testactivity_layout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\nodatalayout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\bundles\\debug\\res\\layout\\nodatalayout.xml"
+    },
+    {
+        "merged": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\txtstylemenu_layout.xml",
+        "source": "F:\\github\\eBook\\eBook\\testTxtBook\\build\\intermediates\\bundles\\debug\\res\\layout\\txtstylemenu_layout.xml"
+    }
+]

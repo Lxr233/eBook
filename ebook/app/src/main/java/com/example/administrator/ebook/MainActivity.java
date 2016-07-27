@@ -93,6 +93,8 @@ public class MainActivity extends BaseActivity {
                 .getLayoutParams();
         lineParam.leftMargin = screenWidth/2;
         mTabLine.setLayoutParams(lineParam);
+
+
     }
 
     public void initViewPager(){
