@@ -90,7 +90,7 @@ public class BaseActivity extends FragmentActivity {
                 String bookName = name[0];
 
                 BookData bookData = new BookData();
-                bookData.setImg(R.drawable.txtimg);
+                bookData.setImg(R.drawable.book1);
                 bookData.setName(bookName);
                 bookData.setMsg("已读 0%");
                 bookData.setType(0);

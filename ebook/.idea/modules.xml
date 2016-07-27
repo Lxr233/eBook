@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HwTxtReader/HwTxtReader.iml" filepath="$PROJECT_DIR$/HwTxtReader/HwTxtReader.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/ebook.iml" filepath="$PROJECT_DIR$/ebook.iml" />
-      <module fileurl="file://$PROJECT_DIR$/testTxtBook/testTxtBook.iml" filepath="$PROJECT_DIR$/testTxtBook/testTxtBook.iml" />
     </modules>
   </component>
 </project>
