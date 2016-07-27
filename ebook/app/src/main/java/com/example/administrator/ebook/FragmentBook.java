@@ -42,8 +42,6 @@ import android.widget.Toast;
 
 import com.example.administrator.ebook.database.BookData;
 import com.example.administrator.ebook.database.BookSetContent;
-import com.example.testtxtbook.BookPlayActivity;
-import com.example.testtxtbook.TestActivity;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
@@ -55,8 +53,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import android.os.Handler;
-
-
 /**
  * Created by Lxr on 2016/4/12.
  */
@@ -102,7 +98,6 @@ public class FragmentBook extends Fragment {
         init();
         initDatabase();
         initCache();
-
     }
 
 
@@ -379,17 +374,6 @@ public class FragmentBook extends Fragment {
                     //使用缓存并异步加载图片
                     viewHolderBook.position = position;
                     loadBookBitmap(bookData.getImg(), viewHolderBook.img, position);
-
-                    convertView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent();
-                            intent.putExtra("bookname", "testbookname");
-                            intent.putExtra("bookpath", bookDataList.get(position).getPath());
-                            intent.setClass(getActivity(), BookPlayActivity.class);
-                            getActivity().startActivity(intent);
-                        }
-                    });
 
                     convertView.setOnLongClickListener(new View.OnLongClickListener() {
 
