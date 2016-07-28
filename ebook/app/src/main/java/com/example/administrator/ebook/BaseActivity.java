@@ -46,6 +46,11 @@ public class BaseActivity extends FragmentActivity {
         mPopupWindow.setOutsideTouchable(true);
         mPopupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
         mPopupWindow.setAnimationStyle(R.style.anim_menu_bottombar);
+
+        //防止popupwindow被虚拟按键挡着
+        mPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         importBook = (ImageView)mPopupWindow.getContentView().findViewById(R.id.importbook);
 
         initListener();
@@ -66,7 +71,9 @@ public class BaseActivity extends FragmentActivity {
             public void onClick(View view) {
                 mPopupWindow.showAtLocation(findViewById(R.id.base_layout), Gravity.BOTTOM, 0, 0);
                 WindowManager.LayoutParams lp = getWindow().getAttributes();
-                lp.alpha = 0.7f;
+                lp.alpha = 0.6f;
+                //处理真机上背景不变暗的方法
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                 getWindow().setAttributes(lp);
                 mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                     @Override
