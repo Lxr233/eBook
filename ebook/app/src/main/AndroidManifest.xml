@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".importbook.FileExplorer"></activity>
+        <activity android:name="com.example.testtxtbook.BookPlayActivity"></activity>
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

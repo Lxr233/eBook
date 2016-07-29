@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import com.example.administrator.ebook.database.BookData;
 import com.example.administrator.ebook.database.BookSetContent;
+import com.example.testtxtbook.BookPlayActivity;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
@@ -328,7 +329,7 @@ public class FragmentBook extends Fragment {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-            BookData bookData = bookDataList.get(position);
+            final BookData bookData = bookDataList.get(position);
 
             int type=getItemViewType(position);
             ViewHolderBook viewHolderBook=null;
@@ -374,6 +375,17 @@ public class FragmentBook extends Fragment {
                     //使用缓存并异步加载图片
                     viewHolderBook.position = position;
                     loadBookBitmap(bookData.getImg(), viewHolderBook.img, position);
+
+                    convertView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent();
+                            intent.putExtra("bookname", bookData.getName());
+                            intent.putExtra("bookpath", bookData.getPath());
+                            intent.setClass(getActivity(), BookPlayActivity.class);
+                            getActivity().startActivity(intent);
+                        }
+                    });
 
                     convertView.setOnLongClickListener(new View.OnLongClickListener() {
 
