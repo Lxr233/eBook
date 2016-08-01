@@ -3,6 +3,7 @@ package com.example.administrator.ebook;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -35,6 +36,7 @@ import android.widget.TextView;
 
 import com.example.administrator.ebook.database.BookData;
 import com.example.administrator.ebook.database.BookSetContent;
+import com.example.testtxtbook.BookPlayActivity;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
@@ -315,6 +317,8 @@ public class FragmentBookSet extends Fragment {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
+            final BookSetContent content = contentList.get(position);
+
             ViewHolderBook viewHolderBook = null;
             if (convertView == null) {
                 viewHolderBook = new ViewHolderBook();
@@ -328,14 +332,14 @@ public class FragmentBookSet extends Fragment {
                 viewHolderBook = (ViewHolderBook) convertView.getTag();
 
             }
-            viewHolderBook.name.setText(contentList.get(position).getName());
-            viewHolderBook.msg.setText(contentList.get(position).getMsg());
+            viewHolderBook.name.setText(content.getName());
+            viewHolderBook.msg.setText(content.getMsg());
             ViewGroup.LayoutParams imgParams = viewHolderBook.img.getLayoutParams();
             imgParams.width = gridViewItemWidth - 2;
             imgParams.height = gridViewItemHeight;
             viewHolderBook.img.setLayoutParams(imgParams);
             viewHolderBook.img.setImageBitmap(
-                    Singleton.getInstance().decodeSampledBitmapFromResource(getResources(), contentList.get(position).getImg(), gridViewItemWidth, gridViewItemHeight));
+                    Singleton.getInstance().decodeSampledBitmapFromResource(getResources(), content.getImg(), gridViewItemWidth, gridViewItemHeight));
             convertView.setOnLongClickListener(new View.OnLongClickListener() {
 
                 // 定义接口的方法，长按View时会被调用到
@@ -349,6 +353,17 @@ public class FragmentBookSet extends Fragment {
 //                            delImg.setVisibility(View.VISIBLE);
                     delImg.animate().translationX(0f).setDuration(300);
                     return false;
+                }
+            });
+
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent();
+                    intent.putExtra("bookname", content.getName());
+                    intent.putExtra("bookpath", content.getPath());
+                    intent.setClass(getActivity(), BookPlayActivity.class);
+                    getActivity().startActivity(intent);
                 }
             });
             viewMap.put(position,convertView);

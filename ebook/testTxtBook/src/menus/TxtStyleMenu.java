@@ -57,6 +57,8 @@ public class TxtStyleMenu extends PopupWindow {
 		this.setHeight(rootheigh);
 		this.setFocusable(true);
 		this.setOutsideTouchable(true);
+		this.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+		this.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		this.setContentView(layout);
 		ColorDrawable dw = new ColorDrawable(Color.parseColor("#88000000"));
 

@@ -53,6 +53,8 @@ public class TxtBrightMenu extends PopupWindow {
 		this.setFocusable(true);
 		this.setOutsideTouchable(true);
 		this.setContentView(layout);
+		this.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+		this.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		ColorDrawable dw = new ColorDrawable(Color.parseColor("#88000000"));
 		this.setBackgroundDrawable(dw);
 

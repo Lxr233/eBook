@@ -60,6 +60,8 @@ public class TxtProgressMenu extends PopupWindow {
 		this.setOutsideTouchable(true);
 		this.setContentView(layout);
 		this.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+		this.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+		this.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		ColorDrawable dw = new ColorDrawable(Color.parseColor("#88000000"));
 		this.setBackgroundDrawable(dw);
 
